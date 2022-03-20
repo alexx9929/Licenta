@@ -1,10 +1,17 @@
 from PySide6.Qt3DExtras import Qt3DExtras
 
 
-def CreateTorusMesh(radius=5, minorRadius=1, rings=100, slices=20):
+def create_torus_mesh(radius=5, minor_radius=1, rings=100, slices=20):
     mesh = Qt3DExtras.QTorusMesh()
     mesh.setRadius(radius)
-    mesh.setMinorRadius(minorRadius)
+    mesh.setMinorRadius(minor_radius)
     mesh.setRings(rings)
     mesh.setSlices(slices)
+    return mesh
+
+
+def create_plane_mesh(width=10, height=10):
+    mesh = Qt3DExtras.QPlaneMesh()
+    mesh.setWidth(width)
+    mesh.setHeight(height)
     return mesh
