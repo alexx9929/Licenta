@@ -2,11 +2,10 @@ import sys
 from PySide6.QtGui import QGuiApplication
 from PySide6.Qt3DExtras import Qt3DExtras
 from Scene import Scene
-from PySide6.QtGui import QVector3D
+from PySide6.QtGui import QVector3D, QQuaternion
 import DIContainer
 from GameObject import GameObject
 import MeshBuilder
-from Camera3D import Camera3D
 
 # Set up the application window
 app = QGuiApplication(sys.argv)
@@ -21,7 +20,6 @@ for i in range(0, 10):
     e.transform.setTranslation(QVector3D(i * 5, i * 5, -i * 1.5))
     scene.objects.append(e)
 
-c = Camera3D()
 view.setRootEntity(scene)
 view.show()
 

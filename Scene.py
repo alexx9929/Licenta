@@ -4,6 +4,7 @@ from PySide6.Qt3DExtras import Qt3DExtras
 from PySide6.Qt3DRender import Qt3DRender
 import DIContainer
 from CameraController3D import CameraController3D
+from CameraHolder3D import CameraHolder3D
 
 
 class Scene(Qt3DCore.QEntity):
@@ -14,7 +15,7 @@ class Scene(Qt3DCore.QEntity):
         self.objects = []
 
         # Camera
-        self.camera = None
+        self.cameraHolder = None
         self.cameraController = None
         pass
 
@@ -22,9 +23,5 @@ class Scene(Qt3DCore.QEntity):
         self.initialize_camera()
 
     def initialize_camera(self):
-        self.camera = DIContainer.view.camera()
-        self.camera.lens().setPerspectiveProjection(45, 16 / 9, 0.1, 1000)
-        self.camera.setPosition(QVector3D(0, 0, 40))
-        self.camera.setViewCenter(QVector3D(0, 0, 0))
-
+        self.cameraHolder = CameraHolder3D()
         self.cameraController = CameraController3D()
