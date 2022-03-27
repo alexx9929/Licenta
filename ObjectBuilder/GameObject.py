@@ -13,7 +13,7 @@ class GameObject:
 
         # Object attributes
         self.entity = Qt3DCore.QEntity(self.scene)
-        self.name = name if name != "" else self.DefaultGameObjectName()
+        self.name = name if name != "" else self.__DEFAULT_GAMEOBJECT_NAME__()
 
         # Transform
         self.transform = Qt3DCore.QTransform()
@@ -27,13 +27,14 @@ class GameObject:
         self.texture = None
         self.textureImage = None
 
-    def AddMesh(self, mesh):
+    def add_mesh(self, mesh):
         self.mesh = mesh
         self.entity.addComponent(self.mesh)
 
-    def AddMaterial(self, material):
+    def add_material(self, material):
         self.material = material
         self.entity.addComponent(self.material)
 
-    def DefaultGameObjectName(self):
+    @staticmethod
+    def __DEFAULT_GAMEOBJECT_NAME__():
         return str("GameObject(" + str(DIContainer.scene.objectIndex) + ")")

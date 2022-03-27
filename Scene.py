@@ -1,10 +1,6 @@
 from PySide6.Qt3DCore import Qt3DCore
-from PySide6.QtGui import QVector3D, QQuaternion
-from PySide6.Qt3DExtras import Qt3DExtras
-from PySide6.Qt3DRender import Qt3DRender
-import DIContainer
-from CameraController3D import CameraController3D
-from CameraHolder3D import CameraHolder3D
+from Cameras.CameraController3D import CameraController3D
+from Cameras.CameraHolder3D import CameraHolder3D
 
 
 class Scene(Qt3DCore.QEntity):

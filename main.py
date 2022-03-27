@@ -1,14 +1,12 @@
 import sys
-import PySide6
-from PySide6.QtCore import QSize
 from PySide6.QtGui import *
 from PySide6.Qt3DExtras import Qt3DExtras
 from PySide6.Qt3DRender import Qt3DRender
 from PySide6.QtCore import QRect
 from Scene import Scene
-from GameObject import GameObject
+from ObjectBuilder.GameObject import GameObject
 import DIContainer
-import MeshBuilder
+from ObjectBuilder.Visuals import MeshBuilder
 
 # Set up the application window
 app = QGuiApplication(sys.argv)
@@ -45,8 +43,8 @@ def CreateMaterial(obj):
 
 for i in range(0, 1):
     e = GameObject()
-    e.AddMesh(MeshBuilder.create_plane_mesh())
-    e.AddMaterial(CreateMaterial(e))
+    e.add_mesh(MeshBuilder.create_plane_mesh())
+    e.add_material(CreateMaterial(e))
     e.transform.setTranslation(QVector3D(i * 5, i * 5, -i * 1.5))
     e.transform.setRotationX(0)
     scene.objects.append(e)
