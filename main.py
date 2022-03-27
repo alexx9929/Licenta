@@ -17,8 +17,8 @@ for i in range(0, 10):
     e = GameObject()
     e.add_mesh(MeshBuilder.create_plane_mesh())
     e.add_material(TextureMaterial.TextureMaterial('creeper.jpg', 100, 100))
-    e.transform.setTranslation(QVector3D(i * 5, i * 5, -i * 1.5))
-    e.transform.setRotationX(45)
+    e.transform.setTranslation(QVector3D(i * 5, i * 5, -i * 5))
+    e.transform.setRotationX(75)
     scene.objects.append(e)
 
 view.setRootEntity(scene)
