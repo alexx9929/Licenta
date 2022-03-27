@@ -27,19 +27,10 @@ class MyTexture(Qt3DRender.QPaintedTextureImage):
 
     def paint(self, painter: QPainter):
         url = "creeper.jpg"
-        image = PySide6.QtGui.QImage(url)
+        image = QImage(url)
         w = painter.device().width()
         h = painter.device().height()
-
-        painter.fillRect(0, 0, w, h, QColor(255, 0, 0))
-        # painter.setPen(QPen(QBrush(QColor(0, 0, 0)), 10))
-        # painter.setBrush(QColor(255, 255, 255))
-        # painter.drawEllipse(0, 0, w, h)
-        # painter.fillRect(0, 0, 100, 100, QColor(255, 255, 255))
-        painter.setPen(QPen(QBrush(QColor(255, 0, 255)), 10))
-        painter.setBrush(QColor(0, 0, 255))
-        painter.drawEllipse(0, 0, 100, 100)
-        # painter.drawImage(QRect(100, 50, 100, 100), image)
+        painter.drawImage(QRect(0, 0, w, h), image)
 
 
 def CreateMaterial(obj):
