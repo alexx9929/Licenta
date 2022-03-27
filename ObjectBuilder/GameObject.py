@@ -24,8 +24,7 @@ class GameObject:
         # Visual layer
         self.mesh = None
         self.material = None
-        self.texture = None
-        self.textureImage = None
+        pass
 
     def add_mesh(self, mesh):
         self.mesh = mesh
