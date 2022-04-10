@@ -37,3 +37,8 @@ class GameObject:
     @staticmethod
     def __DEFAULT_GAMEOBJECT_NAME__():
         return str("GameObject(" + str(DIContainer.scene.objectIndex) + ")")
+
+    # At a scale of (1, 1, 1), the plane primitive has a world length of 10
+    @staticmethod
+    def __DEFAULT__PLANE_LENGTH__():
+        return 10
