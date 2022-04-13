@@ -29,11 +29,13 @@ a = os.listdir(image_directory)
 planeSize = GameObject.__DEFAULT__PLANE_LENGTH__()
 window.imageCount = imageCount = 100
 
-tic = perf_counter()
 objectsCreationTime = []
 textureCreationTime = []
 
+t01 = perf_counter()
 images = ResourcesManager.load_images(image_directory, 100)
+t02 = perf_counter()
+print(f"{len(images)} images read in {t02 - t01:0.2f} seconds")
 
 for i in range(0, len(images)):
     currentRow = int(i / window.imagesPerRow)
@@ -47,31 +49,15 @@ for i in range(0, len(images)):
 
     rotation = QQuaternion.fromEulerAngles(90, 0, 0)
     scale = QVector3D(1, 1, 1)
-    ObjectBuilder.create_textured_plane(position, rotation, scale, window.textureSize, image=images[i])
-# for i in range(0, imageCount):
-#     t1 = perf_counter()
-#     currentRow = int(i / window.imagesPerRow)
-#     currentCol = i % window.imagesPerRow
-#
-#     path = os.path.join(image_directory, a[i])
-#     e = GameObject()
-#     e.add_mesh(MeshBuilder.create_plane_mesh())
-#
-#     t11 = perf_counter()
-#     e.add_material(TextureMaterial.TextureMaterial(path, window.textureSize, window.textureSize))
-#     t12 = perf_counter()
-#     textureCreationTime.append(t12 - t11)
-#
-#     e.transform.setTranslation(QVector3D(currentCol * (planeSize + window.imageOffset), -currentRow * (planeSize + window.imageOffset), 0))
-#     e.transform.setRotationX(90)
-#     scene.objects.append(e)
-#     t2 = perf_counter()
-#     objectsCreationTime.append(t2 - t1)
 
-toc = perf_counter()
-print(f"Created {len(scene.objects)} objects in {toc - tic:0.2f} seconds")
-# print(f"Average object creation time: {(sum(objectsCreationTime) / len(objectsCreationTime)) * 1000:0.6f} ms")
-# print(f"Average texture creation time: {(sum(textureCreationTime) / len(textureCreationTime)) * 1000:0.6f} ms")
+    t11 = perf_counter()
+    ObjectBuilder.create_textured_plane(position, rotation, scale, window.textureSize, image=images[i])
+    t12 = perf_counter()
+    objectsCreationTime.append(t12 - t11)
+
+print(f"Average object creation time: {(sum(objectsCreationTime) / len(objectsCreationTime)) * 1000:0.6f} ms")
+t03 = perf_counter()
+print(f"{len(images)} objects created in {t03 - t01:0.2f} seconds")
 
 view.setRootEntity(scene)
 
