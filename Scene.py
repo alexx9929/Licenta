@@ -21,3 +21,6 @@ class Scene(Qt3DCore.QEntity):
     def initialize_camera(self):
         self.cameraHolder = CameraHolder3D()
         self.cameraController = CameraController3D()
+
+    def clear_scene(self):
+        self.objects.clear()

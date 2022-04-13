@@ -11,4 +11,6 @@ class CameraHolder3D:
         pass
 
     def set_position(self, x: float, y: float, z: float):
+        self.camera.setPosition(QVector3D(0, 0, 40))
+        self.camera.setViewCenter(QVector3D(0, 0, 0))
         self.camera.translateWorld(QVector3D(x, y, z))

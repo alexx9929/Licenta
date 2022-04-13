@@ -1,3 +1,3 @@
 scene = None
 view = None
-container = None
+window_container = None
