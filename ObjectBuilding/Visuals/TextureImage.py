@@ -5,11 +5,11 @@ from PySide6.Qt3DRender import Qt3DRender
 
 class TextureImage(Qt3DRender.QPaintedTextureImage):
 
-    def __init__(self, image_path: str, width: int, height: int):
+    def __init__(self, width: int, height: int, image_path=None, image=None):
         super().__init__()
         # Variables
         self.image_path = image_path
-        self.image = QImage(self.image_path)
+        self.image = QImage(self.image_path) if image_path else image
 
         # Setting sizes
         self.setWidth(width)
