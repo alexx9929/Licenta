@@ -22,4 +22,5 @@ class ObjectBuilder:
         obj.transform.setTranslation(translation)
         obj.transform.setRotation(rotation)
         DIContainer.scene.objects.append(obj)
-        pass
+        return
+

@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, gc
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.Qt3DExtras import Qt3DExtras
@@ -11,6 +11,7 @@ from ObjectBuilding.Visuals import MeshBuilder, TextureMaterial
 from time import perf_counter
 from GUI.MainWindow import MainWindow
 from ResourcesManagement.ResourcesManager import ResourcesManager
+
 
 # Set up the application window
 app = QApplication(sys.argv)

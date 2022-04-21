@@ -1,12 +1,11 @@
-import math
-
+import DIContainer, os, sys, math
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from ObjectBuilding.GameObject import GameObject
 from time import perf_counter
 from ResourcesManagement.ResourcesManager import ResourcesManager
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
-import DIContainer, os
+from Utilities import MiscFunctions
 
 
 class FloatingButtonWidget(QPushButton):  # 1
@@ -96,7 +95,6 @@ class MainWindow(QMainWindow):
         t01 = perf_counter()
         images = ResourcesManager.load_images(directory, count)
         t02 = perf_counter()
-        print(f"{len(images)} images read in {t02 - t01:0.2f} seconds")
 
         self.imagesPerRow = int(math.sqrt(self.imageCount))
 
@@ -113,15 +111,19 @@ class MainWindow(QMainWindow):
             scale = QVector3D(1, 1, 1)
 
             t11 = perf_counter()
-            ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
+            plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
+            MiscFunctions.print_collection_size(plane, "object")
             t12 = perf_counter()
             objects_creation_times.append(t12 - t11)
 
         self.center_camera()
+        MiscFunctions.print_collection_size(DIContainer.scene.objects, "objects")
         average_object_creation_time = (sum(objects_creation_times) / len(objects_creation_times)) * 1000
-        print(f"Average object creation time: {average_object_creation_time:0.6f} ms")
+        print(f"Average object creation time (without image creation): {average_object_creation_time:0.6f} ms")
+        print(f"{len(images)} images created in {t02 - t01:0.2f} seconds")
         t03 = perf_counter()
         print(f"{len(images)} objects created in {t03 - t01:0.2f} seconds")
+        print("\n")
 
     def center_camera(self):
         plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
