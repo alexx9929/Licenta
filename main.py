@@ -1,4 +1,6 @@
 import sys, os, gc
+
+import memory_profiler
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.Qt3DExtras import Qt3DExtras
@@ -11,7 +13,7 @@ from ObjectBuilding.Visuals import MeshBuilder, TextureMaterial
 from time import perf_counter
 from GUI.MainWindow import MainWindow
 from ResourcesManagement.ResourcesManager import ResourcesManager
-
+from memory_profiler import profile
 
 # Set up the application window
 app = QApplication(sys.argv)
@@ -22,20 +24,29 @@ window = MainWindow()
 scene = DIContainer.scene = Scene()
 scene.initialize()
 
+# imageDim = 4096
+# ResourcesManager.load_image(f"C:\\Users\\serba\\Desktop\\Sample images\\{imageDim}x{imageDim}.jpg")
+# ResourcesManager.load_image(f"C:\\Users\\serba\\Desktop\\Sample images\\{imageDim}x{imageDim}.jpg", 255)
+
+# def load_image_of_dim(imageDim):
+#     imagePath = f"C:\\Users\\serba\\Desktop\\Sample images\\{imageDim}x{imageDim}.jpg"
+#     window.load_image_in_scene(imagePath, 255)
+#
+# load_image_of_dim(512)
+#window.load_images_in_scene(window.defaultImageDirectory, 100)
 view.setRootEntity(scene)
-
-# centering camera
-window.center_camera()
+#
+# # centering camera
+# window.center_camera()
 window.show()
+#
 
-def load_image_of_dim(imageDim):
-    imagePath = f"C:\\Users\\serba\\Desktop\\Sample images\\{imageDim}x{imageDim}.jpg"
-    window.load_image_in_scene(imagePath, imageDim)
 
 # for i in range(0, 10):
 #     load_image_of_dim(512)
 # load_image_of_dim(1024)
 # load_image_of_dim(2048)
 # load_image_of_dim(4096)
+
 # execute and cleanup
 app.exec()

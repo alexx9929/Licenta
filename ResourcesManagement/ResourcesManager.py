@@ -4,6 +4,7 @@ from time import perf_counter
 from Utilities import MiscFunctions
 from PySide6.QtCore import QRect, QSize, Qt
 from memory_profiler import profile
+import numpy as np
 
 class ResourcesManager:
 
@@ -11,22 +12,21 @@ class ResourcesManager:
         pass
 
     @staticmethod
-    def load_image(path: str, imageSize: int):
-        return QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+    @profile
+    def load_image(path: str, imageSize=0):
+        if imageSize > 0:
+            return QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        else:
+            return QImage(path)
 
     @staticmethod
     def load_images(directory: str, count: int, imageSize: int):
         files = os.listdir(directory)
         images = []
-        images_creation_times = []
-
+        #images = np.empty(shape=(count), dtype=QImage)
         for i in range(0, count):
             path = os.path.join(directory, files[i])
-            t01 = perf_counter()
-            im = QImage(path)
-            images.append(im.scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
-            t02 = perf_counter()
-            images_creation_times.append((t02 - t01) * 1000)
-            
-        print(f"Average image creation time: {sum(images_creation_times) / len(images_creation_times):0.02} ms")
+            #images[i] = QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            images.append(QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+
         return images

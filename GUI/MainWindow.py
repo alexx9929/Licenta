@@ -108,18 +108,15 @@ class MainWindow(QMainWindow):
         ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path, imageSize))
         self.center_camera()
 
+    # Object size should be limited at 2.28MiB
     @profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
 
         DIContainer.scene.clear_scene()
-        objects_creation_times = []
-
-        t01 = perf_counter()
         images = ResourcesManager.load_images(directory, count, self.textureSize)
-        t02 = perf_counter()
-
+        #print(images.shape)
         self.imagesPerRow = int(math.sqrt(self.imageCount))
 
         for i in range(0, len(images)):
@@ -134,18 +131,9 @@ class MainWindow(QMainWindow):
             rotation = QQuaternion.fromEulerAngles(90, 0, 0)
             scale = QVector3D(1, 1, 1)
 
-            t11 = perf_counter()
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
-            t12 = perf_counter()
-            objects_creation_times.append(t12 - t11)
 
         self.center_camera()
-        average_object_creation_time = (sum(objects_creation_times) / len(objects_creation_times)) * 1000
-        print(f"Average object creation time (without image creation): {average_object_creation_time:0.6f} ms")
-        print(f"{len(images)} images created in {t02 - t01:0.2f} seconds")
-        t03 = perf_counter()
-        print(f"{len(images)} objects created in {t03 - t01:0.2f} seconds")
-        print("\n")
 
     def center_camera(self):
         plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
