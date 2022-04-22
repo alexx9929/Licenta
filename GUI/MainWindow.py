@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.imageOffset = 1
         self.imagesPerRow = 10
         self.textureSize = 255
-        self.imageCount = 100
+        self.imageCount = 1000
         self.planeSize = GameObject.__DEFAULT__PLANE_LENGTH__()
 
         # Setup
@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         # Image loading buttons
-        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Comedy gold 2'
+        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\10000Samples'
         #self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Sample images'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
@@ -86,6 +86,7 @@ class MainWindow(QMainWindow):
         self.imageCountLineEdit.textChanged.connect(lambda x: self.set_image_count(int(self.imageCountLineEdit.text())))
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
+        
 
     def get_image_count(self):
         return self.imageCount
@@ -116,7 +117,6 @@ class MainWindow(QMainWindow):
 
         DIContainer.scene.clear_scene()
         images = ResourcesManager.load_images(directory, count, self.textureSize)
-        #print(images.shape)
         self.imagesPerRow = int(math.sqrt(self.imageCount))
 
         for i in range(0, len(images)):

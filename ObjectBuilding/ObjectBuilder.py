@@ -18,6 +18,7 @@ class ObjectBuilder:
                               image_path=None):
         obj = GameObject()
         obj.add_mesh(MeshBuilder.create_plane_mesh())
+        #obj.add_material(TextureMaterial.TextureMaterial(texture_size, texture_size))
         obj.add_material(
             TextureMaterial.TextureMaterial(texture_size, texture_size, image=image, image_path=image_path))
         obj.transform.setTranslation(translation)

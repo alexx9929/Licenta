@@ -12,7 +12,6 @@ class ResourcesManager:
         pass
 
     @staticmethod
-    @profile
     def load_image(path: str, imageSize=0):
         if imageSize > 0:
             return QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)

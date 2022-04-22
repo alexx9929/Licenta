@@ -5,6 +5,7 @@ from memory_profiler import profile
 
 
 class TextureMaterial(Qt3DExtras.QTextureMaterial):
+
     def __init__(self, texture_width: int, texture_height: int, image_path=None, image=None):
         super().__init__()
         # Variables

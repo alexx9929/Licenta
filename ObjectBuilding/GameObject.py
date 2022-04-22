@@ -5,15 +5,15 @@ import DIContainer
 
 
 class GameObject:
+    __slots__ = ['name','entity','transform','material','mesh']
 
     def __init__(self, name=""):
         # Dependencies
-        self.scene = DIContainer.scene
-        self.scene.objectIndex += 1
+        DIContainer.scene.objectIndex += 1
 
         # Object attributes
-        self.entity = Qt3DCore.QEntity(self.scene)
-        self.name = name if name != "" else self.__DEFAULT_GAMEOBJECT_NAME__()
+        self.entity = Qt3DCore.QEntity(DIContainer.scene)
+        self.name = name if name != "" else GameObject.__DEFAULT_GAMEOBJECT_NAME__()
 
         # Transform
         self.transform = Qt3DCore.QTransform()
