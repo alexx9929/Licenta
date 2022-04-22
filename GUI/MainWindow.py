@@ -6,6 +6,7 @@ from time import perf_counter
 from ResourcesManagement.ResourcesManager import ResourcesManager
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
 from Utilities import MiscFunctions
+from memory_profiler import profile
 
 
 class FloatingButtonWidget(QPushButton):  # 1
@@ -46,8 +47,8 @@ class MainWindow(QMainWindow):
         # Variables
         self.imageOffset = 1
         self.imagesPerRow = 10
-        self.textureSize = 512
-        self.imageCount = 1
+        self.textureSize = 255
+        self.imageCount = 100
         self.planeSize = GameObject.__DEFAULT__PLANE_LENGTH__()
 
         # Setup
@@ -64,16 +65,22 @@ class MainWindow(QMainWindow):
         self.top_buttons.setLayout(self.top_layout)
 
         self.loadImagesButton = QPushButton("Load images")
+        self.loadSingleImageButton = QPushButton("Load single image")
         self.imageCountLineEdit = QLineEdit()
+
+        #self.top_layout.addWidget(self.loadSingleImageButton)
         self.top_layout.addWidget(self.loadImagesButton)
         self.top_layout.addWidget(self.imageCountLineEdit)
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         # Image loading buttons
-        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Comedy Gold 2'
+        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Comedy gold 2'
+        #self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Sample images'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
                                                 self.get_image_count()))
+        # self.loadSingleImageButton.clicked.connect(
+        #     lambda x: self.load_image_in_scene(QFileDialog.selectedFiles(dir=self.defaultImageDirectory)[0]))
 
         self.imageCountLineEdit.setText(str(self.imageCount))
         self.imageCountLineEdit.textChanged.connect(lambda x: self.set_image_count(int(self.imageCountLineEdit.text())))
@@ -86,6 +93,22 @@ class MainWindow(QMainWindow):
     def set_image_count(self, count: int):
         self.imageCount = count
 
+    @profile
+    def load_image_in_scene(self, path: str, clear = True):
+        if not path or path == "":
+            return
+
+        if clear:
+            DIContainer.scene.clear_scene()
+
+        position = QVector3D(0, 0, 0)
+        rotation = QQuaternion.fromEulerAngles(90, 0, 0)
+        scale = QVector3D(1, 1, 1)
+
+        plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path))
+        self.center_camera()
+
+    @profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
@@ -113,12 +136,10 @@ class MainWindow(QMainWindow):
 
             t11 = perf_counter()
             plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
-            MiscFunctions.print_collection_size(plane, "object")
             t12 = perf_counter()
             objects_creation_times.append(t12 - t11)
 
         self.center_camera()
-        MiscFunctions.print_collection_size(DIContainer.scene.objects, "objects")
         average_object_creation_time = (sum(objects_creation_times) / len(objects_creation_times)) * 1000
         print(f"Average object creation time (without image creation): {average_object_creation_time:0.6f} ms")
         print(f"{len(images)} images created in {t02 - t01:0.2f} seconds")

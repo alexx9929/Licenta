@@ -4,7 +4,7 @@ from PySide6.Qt3DExtras import Qt3DExtras
 from PySide6.QtCore import *
 from ObjectBuilding.GameObject import GameObject
 from ObjectBuilding.Visuals import MeshBuilder, TextureMaterial
-
+from memory_profiler import profile
 
 class ObjectBuilder:
 

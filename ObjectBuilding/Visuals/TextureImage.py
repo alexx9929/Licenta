@@ -1,6 +1,7 @@
 from PySide6.QtGui import *
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QRect, QSize, Qt
 from PySide6.Qt3DRender import Qt3DRender
+from memory_profiler import profile
 
 
 class TextureImage(Qt3DRender.QPaintedTextureImage):

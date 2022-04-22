@@ -28,5 +28,14 @@ view.setRootEntity(scene)
 window.center_camera()
 window.show()
 
+def load_image_of_dim(imageDim):
+    imagePath = f"C:\\Users\\serba\\Desktop\\Sample images\\{imageDim}x{imageDim}.jpg"
+    window.load_image_in_scene(imagePath)
+
+# for i in range(0, 10):
+#     load_image_of_dim(512)
+# load_image_of_dim(1024)
+# load_image_of_dim(2048)
+# load_image_of_dim(4096)
 # execute and cleanup
 app.exec()
