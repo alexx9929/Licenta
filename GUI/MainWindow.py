@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
         rotation = QQuaternion.fromEulerAngles(90, 0, 0)
         scale = QVector3D(1, 1, 1)
 
-        plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path, imageSize))
+        ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path, imageSize))
         self.center_camera()
 
     @profile
@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
             scale = QVector3D(1, 1, 1)
 
             t11 = perf_counter()
-            plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
+            ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
             t12 = perf_counter()
             objects_creation_times.append(t12 - t11)
 
