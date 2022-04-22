@@ -47,15 +47,16 @@ class MainWindow(QMainWindow):
         self.imageOffset = 1
         self.imagesPerRow = 10
         self.textureSize = 512
-        self.imageCount = 100
+        self.imageCount = 1
         self.planeSize = GameObject.__DEFAULT__PLANE_LENGTH__()
 
         # Setup
         self.central_widget.setLayout(self.grid)
         self.setCentralWidget(self.central_widget)
 
-        self.setMinimumWidth(2560)
-        self.setMinimumHeight(1336)
+        self.showMaximized()
+        # self.setMinimumWidth(2560)
+        # self.setMinimumHeight(1336)
 
         # Top buttons
         self.top_buttons = QWidget(self)
@@ -69,7 +70,7 @@ class MainWindow(QMainWindow):
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         # Image loading buttons
-        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\test2014'
+        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Comedy Gold 2'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
                                                 self.get_image_count()))
