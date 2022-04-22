@@ -11,11 +11,11 @@ class ResourcesManager:
         pass
 
     @staticmethod
-    def load_image(path: str):
-        return QImage(path)
+    def load_image(path: str, imageSize: int):
+        return QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
 
     @staticmethod
-    def load_images(directory: str, count: int):
+    def load_images(directory: str, count: int, imageSize: int):
         files = os.listdir(directory)
         images = []
         images_creation_times = []
@@ -23,7 +23,7 @@ class ResourcesManager:
         for i in range(0, count):
             path = os.path.join(directory, files[i])
             t01 = perf_counter()
-            images.append(QImage(path).scaled(QSize(255, 255), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+            images.append(QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
             t02 = perf_counter()
             images_creation_times.append((t02 - t01) * 1000)
 

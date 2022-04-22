@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self.imageCount = count
 
     @profile
-    def load_image_in_scene(self, path: str, clear = True):
+    def load_image_in_scene(self, path: str, imageSize: int, clear = True):
         if not path or path == "":
             return
 
@@ -105,7 +105,7 @@ class MainWindow(QMainWindow):
         rotation = QQuaternion.fromEulerAngles(90, 0, 0)
         scale = QVector3D(1, 1, 1)
 
-        plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path))
+        plane = ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path, imageSize))
         self.center_camera()
 
     @profile
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
         objects_creation_times = []
 
         t01 = perf_counter()
-        images = ResourcesManager.load_images(directory, count)
+        images = ResourcesManager.load_images(directory, count, self.textureSize)
         t02 = perf_counter()
 
         self.imagesPerRow = int(math.sqrt(self.imageCount))

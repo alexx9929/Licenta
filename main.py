@@ -30,7 +30,7 @@ window.show()
 
 def load_image_of_dim(imageDim):
     imagePath = f"C:\\Users\\serba\\Desktop\\Sample images\\{imageDim}x{imageDim}.jpg"
-    window.load_image_in_scene(imagePath)
+    window.load_image_in_scene(imagePath, imageDim)
 
 # for i in range(0, 10):
 #     load_image_of_dim(512)

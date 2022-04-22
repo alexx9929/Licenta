@@ -6,6 +6,7 @@ from ObjectBuilding.GameObject import GameObject
 from ObjectBuilding.Visuals import MeshBuilder, TextureMaterial
 from memory_profiler import profile
 
+
 class ObjectBuilder:
 
     def __init__(self):
