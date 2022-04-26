@@ -55,9 +55,9 @@ class MainWindow(QMainWindow):
         self.central_widget.setLayout(self.grid)
         self.setCentralWidget(self.central_widget)
 
-        self.showMaximized()
-        # self.setMinimumWidth(2560)
-        # self.setMinimumHeight(1336)
+        # self.showMaximized()
+        self.setMinimumWidth(2560)
+        self.setMinimumHeight(1336)
 
         # Top buttons
         self.top_buttons = QWidget(self)
@@ -68,14 +68,14 @@ class MainWindow(QMainWindow):
         self.loadSingleImageButton = QPushButton("Load single image")
         self.imageCountLineEdit = QLineEdit()
 
-        #self.top_layout.addWidget(self.loadSingleImageButton)
+        # self.top_layout.addWidget(self.loadSingleImageButton)
         self.top_layout.addWidget(self.loadImagesButton)
         self.top_layout.addWidget(self.imageCountLineEdit)
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         # Image loading buttons
-        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\10000Samples'
-        #self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Sample images'
+        self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
+        # self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Sample images'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
                                                 self.get_image_count()))
@@ -86,7 +86,8 @@ class MainWindow(QMainWindow):
         self.imageCountLineEdit.textChanged.connect(lambda x: self.set_image_count(int(self.imageCountLineEdit.text())))
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
-        
+
+        self.im = []
 
     def get_image_count(self):
         return self.imageCount
@@ -95,7 +96,7 @@ class MainWindow(QMainWindow):
         self.imageCount = count
 
     @profile
-    def load_image_in_scene(self, path: str, imageSize: int, clear = True):
+    def load_image_in_scene(self, path: str, imageSize: int, clear=True):
         if not path or path == "":
             return
 
@@ -106,7 +107,8 @@ class MainWindow(QMainWindow):
         rotation = QQuaternion.fromEulerAngles(90, 0, 0)
         scale = QVector3D(1, 1, 1)
 
-        ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=ResourcesManager.load_image(path, imageSize))
+        ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize,
+                                            image=ResourcesManager.load_image(path, imageSize))
         self.center_camera()
 
     # Object size should be limited at 2.28MiB
@@ -116,9 +118,11 @@ class MainWindow(QMainWindow):
             return
 
         DIContainer.scene.clear_scene()
-        images = ResourcesManager.load_images(directory, count, self.textureSize)
+        self.im = ResourcesManager.load_images(directory, count, self.textureSize)
+
         self.imagesPerRow = int(math.sqrt(self.imageCount))
 
+        return
         for i in range(0, len(images)):
             current_row = int(i / self.imagesPerRow)
             current_col = i % self.imagesPerRow

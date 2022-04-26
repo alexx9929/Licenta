@@ -18,6 +18,9 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         pass
 
     def paint(self, painter: QPainter):
+        if not self.image:
+            return
+
         w = painter.device().width()
         h = painter.device().height()
         painter.drawImage(QRect(0, 0, w, h), self.image)
