@@ -1,5 +1,5 @@
 from PySide6.QtGui import QImage, QPainter
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QRect, QSize, Qt
 from PySide6.Qt3DRender import Qt3DRender
 import os
 
@@ -23,4 +23,5 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
             return
 
         painter.drawImage(QRect(0, 0, self.width(), self.height()),
-                          QImage(os.path.join(DIContainer.main_window.defaultImageDirectory, self.filename)))
+                          QImage(os.path.join(DIContainer.main_window.defaultImageDirectory, self.filename))
+                          .scaled(QSize(self.width(), self.height()), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
