@@ -5,7 +5,7 @@ import DIContainer
 
 
 class GameObject:
-    __slots__ = ['name','entity','transform','material','mesh']
+    __slots__ = ['name', 'entity', 'transform', 'material', 'mesh']
 
     def __init__(self, name=""):
         # Dependencies
@@ -22,13 +22,12 @@ class GameObject:
         self.entity.addComponent(self.transform)
 
         # Visual layer
-        self.mesh = None
+        # self.mesh = None
         self.material = None
         pass
 
     def add_mesh(self, mesh):
-        self.mesh = mesh
-        self.entity.addComponent(self.mesh)
+        self.entity.addComponent(mesh)
 
     def add_material(self, material):
         self.material = material
@@ -41,4 +40,4 @@ class GameObject:
     # At a scale of (1, 1, 1), the plane primitive has a world length of 10
     @staticmethod
     def __DEFAULT__PLANE_LENGTH__():
-        return 10
+        return 1

@@ -14,15 +14,12 @@ class ObjectBuilder:
 
     @staticmethod
     def create_textured_plane(translation: QVector3D, rotation: QQuaternion, scale: QVector3D, texture_size: int,
-                              image=None,
                               image_path=None):
         obj = GameObject()
-        obj.add_mesh(MeshBuilder.create_plane_mesh())
-        #obj.add_material(TextureMaterial.TextureMaterial(texture_size, texture_size))
+        obj.add_mesh(DIContainer.plane_mesh)
         obj.add_material(
-            TextureMaterial.TextureMaterial(texture_size, texture_size, image=image, image_path=image_path))
+            TextureMaterial.TextureMaterial(texture_size, texture_size, filename=image_path))
         obj.transform.setTranslation(translation)
         obj.transform.setRotation(rotation)
         DIContainer.scene.objects.append(obj)
         return
-

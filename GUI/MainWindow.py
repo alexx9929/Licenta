@@ -1,12 +1,15 @@
 import DIContainer, os, sys, math
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
+from PySide6.QtCore import QRect, QSize, Qt
 from ObjectBuilding.GameObject import GameObject
+from ObjectBuilding.Visuals import MeshBuilder
 from time import perf_counter
 from ResourcesManagement.ResourcesManager import ResourcesManager
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
 from Utilities import MiscFunctions
 from memory_profiler import profile
+from pympler import asizeof
 
 
 class FloatingButtonWidget(QPushButton):  # 1
@@ -45,7 +48,7 @@ class MainWindow(QMainWindow):
         self.grid = QGridLayout()
 
         # Variables
-        self.imageOffset = 1
+        self.imageOffset = 0.1
         self.imagesPerRow = 10
         self.textureSize = 255
         self.imageCount = 1000
@@ -96,34 +99,20 @@ class MainWindow(QMainWindow):
         self.imageCount = count
 
     @profile
-    def load_image_in_scene(self, path: str, imageSize: int, clear=True):
-        if not path or path == "":
-            return
-
-        if clear:
-            DIContainer.scene.clear_scene()
-
-        position = QVector3D(0, 0, 0)
-        rotation = QQuaternion.fromEulerAngles(90, 0, 0)
-        scale = QVector3D(1, 1, 1)
-
-        ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize,
-                                            image=ResourcesManager.load_image(path, imageSize))
-        self.center_camera()
-
-    # Object size should be limited at 2.28MiB
-    @profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
 
         DIContainer.scene.clear_scene()
-        self.im = ResourcesManager.load_images(directory, count, self.textureSize)
+        DIContainer.plane_mesh = MeshBuilder.create_plane_mesh(width=1, height=1)
+        files = os.listdir(directory)
 
-        self.imagesPerRow = int(math.sqrt(self.imageCount))
+        self.imageCount = count
+        self.imagesPerRow = int(math.sqrt(count))
 
-        return
-        for i in range(0, len(images)):
+        for i in range(0, count):
+            path = files[i]
+
             current_row = int(i / self.imagesPerRow)
             current_col = i % self.imagesPerRow
 
@@ -135,7 +124,7 @@ class MainWindow(QMainWindow):
             rotation = QQuaternion.fromEulerAngles(90, 0, 0)
             scale = QVector3D(1, 1, 1)
 
-            ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image=images[i])
+            ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
         self.center_camera()
 
@@ -152,4 +141,4 @@ class MainWindow(QMainWindow):
 
         x_pos = (plane_size + self.imageOffset) * x_multiplier
         y_pos = (plane_size + self.imageOffset) * y_multiplier
-        DIContainer.scene.cameraHolder.set_position(x_pos, y_pos, 40)
+        DIContainer.scene.cameraHolder.set_position(x_pos, y_pos, 10)

@@ -6,6 +6,7 @@ from PySide6.QtCore import QRect, QSize, Qt
 from memory_profiler import profile
 import numpy as np
 
+
 class ResourcesManager:
 
     def __init__(self):
@@ -22,10 +23,8 @@ class ResourcesManager:
     def load_images(directory: str, count: int, imageSize: int):
         files = os.listdir(directory)
         images = []
-        #images = np.empty(shape=(count), dtype=QImage)
         for i in range(0, count):
             path = os.path.join(directory, files[i])
-            #images[i] = QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
             images.append(QImage(path).scaled(QSize(imageSize, imageSize), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
 
         return images
