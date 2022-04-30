@@ -15,10 +15,10 @@ window = DIContainer.main_window = MainWindow()
 scene = DIContainer.scene = Scene()
 scene.initialize()
 
-#window.load_images_in_scene(window.defaultImageDirectory, 100)
 view.setRootEntity(scene)
 
 window.show()
+window.load_images_in_scene(window.defaultImageDirectory, 50000)
 
 # execute and cleanup
 app.exec()

@@ -8,10 +8,10 @@ import DIContainer
 
 class TextureImage(Qt3DRender.QPaintedTextureImage):
 
-    def __init__(self, width: int, height: int, image_path=None):
+    def __init__(self, width: int, height: int, filename=None):
         super().__init__()
         # Variables
-        self.filename = image_path
+        self.filename = filename
 
         # Setting sizes
         self.setWidth(width)
