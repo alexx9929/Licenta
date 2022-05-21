@@ -15,7 +15,7 @@ class ObjectBuilder:
     @staticmethod
     def create_textured_plane(translation: QVector3D, rotation: QQuaternion, scale: QVector3D, texture_size: int,
                               image_path=None):
-        obj = GameObject()
+        obj = GameObject(DIContainer.scene)
         obj.add_mesh(DIContainer.plane_mesh)
         obj.add_material(
             TextureMaterial.TextureMaterial(texture_size, texture_size, filename=image_path))

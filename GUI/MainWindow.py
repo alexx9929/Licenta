@@ -1,3 +1,5 @@
+import cmath
+
 import DIContainer, os, sys, math
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
@@ -10,6 +12,13 @@ from ObjectBuilding.ObjectBuilder import ObjectBuilder
 from Utilities import MiscFunctions
 from memory_profiler import profile
 from pympler import asizeof
+import numpy as np
+from enum import Enum
+
+
+class Distribution(Enum):
+    planar = 1
+    gaussian = 2
 
 
 class FloatingButtonWidget(QPushButton):  # 1
@@ -51,7 +60,7 @@ class MainWindow(QMainWindow):
         self.imageOffset = 0.1
         self.imagesPerRow = 10
         self.textureSize = 255
-        self.imageCount = 1000
+        self.imageCount = 100
         self.planeSize = GameObject.__DEFAULT__PLANE_LENGTH__()
 
         # Setup
@@ -90,7 +99,10 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
 
-        self.im = []
+        # Gaussian distribution
+        self.image_distribution = Distribution.gaussian
+        self.gaussian_mean = [0, 0, 0]
+        self.gaussian_deviation = [30, 20, 20]
 
     def get_image_count(self):
         return self.imageCount
@@ -98,7 +110,7 @@ class MainWindow(QMainWindow):
     def set_image_count(self, count: int):
         self.imageCount = count
 
-    @profile
+    #@profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
@@ -109,6 +121,18 @@ class MainWindow(QMainWindow):
 
         self.imageCount = count
         self.imagesPerRow = int(math.sqrt(count))
+        positions = []
+
+        square_root = math.sqrt(self.imageCount)
+        self.gaussian_deviation[0] = square_root * 0.25
+        self.gaussian_deviation[1] = square_root * 0.5
+        self.gaussian_deviation[2] = square_root * 0.25
+
+        print(self.gaussian_deviation)
+        if self.image_distribution == Distribution.gaussian:
+            positions = (np.random.normal(self.gaussian_mean[0], self.gaussian_deviation[0], count),
+                         np.random.normal(self.gaussian_mean[1], self.gaussian_deviation[1], count),
+                         np.random.normal(self.gaussian_mean[2], self.gaussian_deviation[2], count))
 
         for i in range(0, count):
             path = files[i]
@@ -116,17 +140,23 @@ class MainWindow(QMainWindow):
             current_row = int(i / self.imagesPerRow)
             current_col = i % self.imagesPerRow
 
-            x_pos = float(current_col * (self.planeSize + self.imageOffset))
-            y_pos = float(-current_row * (self.planeSize + self.imageOffset))
-            z_pos = 0
+            if self.image_distribution == Distribution.planar:
+                x_pos = float(current_col * (self.planeSize + self.imageOffset))
+                y_pos = float(-current_row * (self.planeSize + self.imageOffset))
+                z_pos = 0
 
-            position = QVector3D(x_pos, y_pos, z_pos)
+                position = QVector3D(x_pos, y_pos, z_pos)
+
+            if self.image_distribution == Distribution.gaussian:
+                position = QVector3D(positions[0][i], positions[1][i], positions[2][i])
+
             rotation = QQuaternion.fromEulerAngles(90, 0, 0)
             scale = QVector3D(1, 1, 1)
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        self.center_camera()
+        if self.image_distribution == Distribution.planar:
+            self.center_camera()
 
     def center_camera(self):
         plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
