@@ -14,7 +14,7 @@ from memory_profiler import profile
 from pympler import asizeof
 import numpy as np
 from enum import Enum
-
+import imagesize
 
 class Distribution(Enum):
     planar = 1
@@ -119,41 +119,56 @@ class MainWindow(QMainWindow):
         DIContainer.plane_mesh = MeshBuilder.create_plane_mesh(width=1, height=1)
         files = os.listdir(directory)
 
-        self.imageCount = count
-        self.imagesPerRow = int(math.sqrt(count))
-        positions = []
-
-        square_root = math.sqrt(self.imageCount)
-        self.normal_deviation[0] = square_root * 0.25
-        self.normal_deviation[1] = square_root * 0.5
-        self.normal_deviation[2] = square_root * 0.25
-
-        if self.image_distribution == Distribution.normal:
-            positions = (np.random.normal(self.normal_mean[0], self.normal_deviation[0], count),
-                         np.random.normal(self.normal_mean[1], self.normal_deviation[1], count),
-                         np.random.normal(self.normal_mean[2], self.normal_deviation[2], count))
-
+        ratios = {}
         for i in range(0, count):
-            path = files[i]
+            path = os.path.join(directory, files[i])
+            width, height = imagesize.get(path)
+            ratio = width/height
+            ratio_str = str(ratio)[:3]
+            if ratio_str in ratios.keys():
+                ratios[ratio_str] += 1
+            else:
+                ratios[ratio_str] = 1
 
-            current_row = int(i / self.imagesPerRow)
-            current_col = i % self.imagesPerRow
+        print(len(ratios.keys()))
 
-            if self.image_distribution == Distribution.planar:
-                x_pos = float(current_col * (self.planeSize + self.imageOffset))
-                y_pos = float(-current_row * (self.planeSize + self.imageOffset))
-                z_pos = 0
-
-                position = QVector3D(x_pos, y_pos, z_pos)
-
-            if self.image_distribution == Distribution.normal:
-                position = QVector3D(positions[0][i], positions[1][i], positions[2][i])
-
-            rotation = QQuaternion.fromEulerAngles(90, 0, 0)
-            scale = QVector3D(1, 1, 1)
-
-            ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
-        self.center_camera()
+        for i in ratios.keys():
+            print("Ratio: " + i + " Count: " + str(ratios[i]))
+        # self.imageCount = count
+        # self.imagesPerRow = int(math.sqrt(count))
+        # positions = []
+        #
+        # square_root = math.sqrt(self.imageCount)
+        # self.normal_deviation[0] = square_root * 0.25
+        # self.normal_deviation[1] = square_root * 0.5
+        # self.normal_deviation[2] = square_root * 0.25
+        #
+        # if self.image_distribution == Distribution.normal:
+        #     positions = (np.random.normal(self.normal_mean[0], self.normal_deviation[0], count),
+        #                  np.random.normal(self.normal_mean[1], self.normal_deviation[1], count),
+        #                  np.random.normal(self.normal_mean[2], self.normal_deviation[2], count))
+        #
+        # for i in range(0, count):
+        #     path = files[i]
+        #
+        #     current_row = int(i / self.imagesPerRow)
+        #     current_col = i % self.imagesPerRow
+        #
+        #     if self.image_distribution == Distribution.planar:
+        #         x_pos = float(current_col * (self.planeSize + self.imageOffset))
+        #         y_pos = float(-current_row * (self.planeSize + self.imageOffset))
+        #         z_pos = 0
+        #
+        #         position = QVector3D(x_pos, y_pos, z_pos)
+        #
+        #     if self.image_distribution == Distribution.normal:
+        #         position = QVector3D(positions[0][i], positions[1][i], positions[2][i])
+        #
+        #     rotation = QQuaternion.fromEulerAngles(90, 0, 0)
+        #     scale = QVector3D(1, 1, 1)
+        #
+        #     ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
+        # self.center_camera()
 
     def center_camera(self):
         if self.image_distribution == Distribution.planar:
