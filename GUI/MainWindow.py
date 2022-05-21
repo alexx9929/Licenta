@@ -18,7 +18,7 @@ from enum import Enum
 
 class Distribution(Enum):
     planar = 1
-    gaussian = 2
+    normal = 2
 
 
 class FloatingButtonWidget(QPushButton):  # 1
@@ -100,9 +100,9 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(DIContainer.window_container)
 
         # Gaussian distribution
-        self.image_distribution = Distribution.gaussian
-        self.gaussian_mean = [0, 0, 0]
-        self.gaussian_deviation = [30, 20, 20]
+        self.image_distribution = Distribution.normal
+        self.normal_mean = [0, 0, 0]
+        self.normal_deviation = [30, 20, 20]
 
     def get_image_count(self):
         return self.imageCount
@@ -124,15 +124,14 @@ class MainWindow(QMainWindow):
         positions = []
 
         square_root = math.sqrt(self.imageCount)
-        self.gaussian_deviation[0] = square_root * 0.25
-        self.gaussian_deviation[1] = square_root * 0.5
-        self.gaussian_deviation[2] = square_root * 0.25
+        self.normal_deviation[0] = square_root * 0.25
+        self.normal_deviation[1] = square_root * 0.5
+        self.normal_deviation[2] = square_root * 0.25
 
-        print(self.gaussian_deviation)
-        if self.image_distribution == Distribution.gaussian:
-            positions = (np.random.normal(self.gaussian_mean[0], self.gaussian_deviation[0], count),
-                         np.random.normal(self.gaussian_mean[1], self.gaussian_deviation[1], count),
-                         np.random.normal(self.gaussian_mean[2], self.gaussian_deviation[2], count))
+        if self.image_distribution == Distribution.normal:
+            positions = (np.random.normal(self.normal_mean[0], self.normal_deviation[0], count),
+                         np.random.normal(self.normal_mean[1], self.normal_deviation[1], count),
+                         np.random.normal(self.normal_mean[2], self.normal_deviation[2], count))
 
         for i in range(0, count):
             path = files[i]
@@ -147,28 +146,33 @@ class MainWindow(QMainWindow):
 
                 position = QVector3D(x_pos, y_pos, z_pos)
 
-            if self.image_distribution == Distribution.gaussian:
+            if self.image_distribution == Distribution.normal:
                 position = QVector3D(positions[0][i], positions[1][i], positions[2][i])
 
             rotation = QQuaternion.fromEulerAngles(90, 0, 0)
             scale = QVector3D(1, 1, 1)
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
-
-        if self.image_distribution == Distribution.planar:
-            self.center_camera()
+        self.center_camera()
 
     def center_camera(self):
-        plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
-        x_multiplier = (self.imagesPerRow / 2) if self.imageCount >= self.imagesPerRow else self.imageCount / 2
-        y_multiplier = -(self.imageCount / self.imagesPerRow) / 2
+        if self.image_distribution == Distribution.planar:
+            plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
+            x_multiplier = (self.imagesPerRow / 2) if self.imageCount >= self.imagesPerRow else self.imageCount / 2
+            y_multiplier = -(self.imageCount / self.imagesPerRow) / 2
 
-        if self.imagesPerRow % 2 != 0:
-            x_multiplier -= 0.5
+            if self.imagesPerRow % 2 != 0:
+                x_multiplier -= 0.5
 
-        if (self.imagesPerRow * self.imagesPerRow) % 2 != 0:
-            y_multiplier += 0.5
+            if (self.imagesPerRow * self.imagesPerRow) % 2 != 0:
+                y_multiplier += 0.5
 
-        x_pos = (plane_size + self.imageOffset) * x_multiplier
-        y_pos = (plane_size + self.imageOffset) * y_multiplier
-        DIContainer.scene.cameraHolder.set_position(x_pos, y_pos, 10)
+            x_pos = (plane_size + self.imageOffset) * x_multiplier
+            y_pos = (plane_size + self.imageOffset) * y_multiplier
+            DIContainer.scene.cameraHolder.set_position(x_pos, y_pos, 10)
+
+        if self.image_distribution == Distribution.normal:
+            z_pos = self.normal_deviation[2] * 2
+            print("D: " + str(self.normal_deviation[2])[:3] + " Z: " + str(z_pos)[:3])
+            DIContainer.scene.cameraHolder.set_position(0, 0, z_pos)
+
