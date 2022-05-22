@@ -13,6 +13,7 @@ class Distribution(Enum):
 class SceneManager:
 
     def __init__(self):
+        self.image_count = 100
         self.imageOffset = 0.1
         self.imagesPerRow = 10
         self.planeSize = GameObject.__DEFAULT__PLANE_LENGTH__()

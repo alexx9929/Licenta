@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         # for i in sortedRatios:
         #     print("Ratio: " + i + " Count: " + str(self.ratios[i]))
 
-        self.imageCount = count
+        self.scene_manager.image_count = count
         positions = self.scene_manager.calculate_positions(count)
 
         for i in range(0, count):
@@ -94,26 +94,8 @@ class MainWindow(QMainWindow):
             scale = QVector3D(1, 1, 1)
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
-        #self.center_camera()
 
-    def center_camera(self):
-        if self.image_distribution == Distribution.planar:
-            plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
-            x_multiplier = (self.imagesPerRow / 2) if self.imageCount >= self.imagesPerRow else self.imageCount / 2
-            y_multiplier = -(self.imageCount / self.imagesPerRow) / 2
+        DIContainer.scene.cameraController.center_camera()
 
-            if self.imagesPerRow % 2 != 0:
-                x_multiplier -= 0.5
 
-            if (self.imagesPerRow * self.imagesPerRow) % 2 != 0:
-                y_multiplier += 0.5
-
-            x_pos = (plane_size + self.imageOffset) * x_multiplier
-            y_pos = (plane_size + self.imageOffset) * y_multiplier
-            DIContainer.scene.cameraHolder.set_position(x_pos, y_pos, 10)
-
-        if self.image_distribution == Distribution.normal:
-            z_pos = self.normal_deviation[2] * 2
-            print("D: " + str(self.normal_deviation[2])[:3] + " Z: " + str(z_pos)[:3])
-            DIContainer.scene.cameraHolder.set_position(0, 0, z_pos)
 
