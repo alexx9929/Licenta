@@ -9,8 +9,8 @@ class CameraController3D(Qt3DExtras.QOrbitCameraController):
         super().__init__(DIContainer.scene)
         self.scene_manager = DIContainer.scene_manager
 
-        self.setLinearSpeed(50)
-        self.setLookSpeed(180)
+        self.setLinearSpeed(30)
+        self.setLookSpeed(20)
         self.setCamera(DIContainer.scene.cameraHolder.camera)
 
     def center_camera(self):
