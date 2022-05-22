@@ -16,17 +16,17 @@ class CameraController3D(Qt3DExtras.QOrbitCameraController):
     def center_camera(self):
         if self.scene_manager.image_distribution == Distribution.planar:
             count = self.scene_manager.image_count
-            imagesPerRow = self.scene_manager.imagesPerRow
+            images_per_row = self.scene_manager.imagesPerRow
             offset = self.scene_manager.imageOffset
 
             plane_size = GameObject.__DEFAULT__PLANE_LENGTH__()
-            x_multiplier = (imagesPerRow / 2) if count >= imagesPerRow else count / 2
-            y_multiplier = -(count / imagesPerRow) / 2
+            x_multiplier = (images_per_row / 2) if count >= images_per_row else count / 2
+            y_multiplier = -(count / images_per_row) / 2
 
-            if imagesPerRow % 2 != 0:
+            if images_per_row % 2 != 0:
                 x_multiplier -= 0.5
 
-            if (imagesPerRow * imagesPerRow) % 2 != 0:
+            if (images_per_row * images_per_row) % 2 != 0:
                 y_multiplier += 0.5
 
             x_pos = (plane_size + offset) * x_multiplier

@@ -9,8 +9,6 @@ from ResourcesManagement.ResourcesManager import ResourcesManager
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
 from Utilities import MiscFunctions
 from memory_profiler import profile
-import numpy as np
-from ResourcesManagement.SceneManager import SceneManager, Distribution
 
 
 class MainWindow(QMainWindow):
