@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         DIContainer.scene.clear_scene()
         files = os.listdir(directory)
 
-        DIContainer.plane_mesh = MeshBuilder.create_plane_mesh(width=1, height=1)
+        DIContainer.default_mesh = MeshBuilder.create_plane_mesh()
 
         self.scene_manager.image_count = count
         positions = self.scene_manager.calculate_positions(count)
