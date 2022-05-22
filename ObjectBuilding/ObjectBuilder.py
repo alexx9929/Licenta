@@ -21,5 +21,6 @@ class ObjectBuilder:
             TextureMaterial.TextureMaterial(texture_size, texture_size, filename=image_path))
         obj.transform.setTranslation(translation)
         obj.transform.setRotation(rotation)
+        obj.transform.setScale3D(scale)
         DIContainer.scene.objects.append(obj)
         return

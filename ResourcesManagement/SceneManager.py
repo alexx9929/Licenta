@@ -25,8 +25,11 @@ class SceneManager:
 
         # Images ratios
         self.ratios = {}
-        self.keep_aspect_ratios = False
+        self.keep_aspect_ratios = True
         pass
+
+    def set_image_count(self, count):
+        self.image_count = count
 
     def calculate_normal_distribution(self, count):
         square_root = math.sqrt(count)

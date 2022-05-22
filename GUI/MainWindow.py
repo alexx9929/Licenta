@@ -9,6 +9,7 @@ from ResourcesManagement.ResourcesManager import ResourcesManager
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
 from Utilities import MiscFunctions
 from memory_profiler import profile
+import imagesize
 
 
 class MainWindow(QMainWindow):
@@ -21,7 +22,6 @@ class MainWindow(QMainWindow):
 
         # Variables
         self.textureSize = 255
-        self.imageCount = 100
 
         # Setup
         self.central_widget.setLayout(self.grid)
@@ -40,7 +40,6 @@ class MainWindow(QMainWindow):
         self.loadSingleImageButton = QPushButton("Load single image")
         self.imageCountLineEdit = QLineEdit()
 
-        # self.top_layout.addWidget(self.loadSingleImageButton)
         self.top_layout.addWidget(self.loadImagesButton)
         self.top_layout.addWidget(self.imageCountLineEdit)
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
@@ -49,20 +48,14 @@ class MainWindow(QMainWindow):
         self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
-                                                self.get_image_count()))
+                                                self.scene_manager.image_count))
 
-        self.imageCountLineEdit.setText(str(self.imageCount))
-        self.imageCountLineEdit.textChanged.connect(lambda x: self.set_image_count(int(self.imageCountLineEdit.text())))
+        self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
+        self.imageCountLineEdit.textChanged.connect(lambda x: self.scene_manager.set_image_count(int(self.imageCountLineEdit.text())))
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
 
-    def get_image_count(self):
-        return self.imageCount
-
-    def set_image_count(self, count: int):
-        self.imageCount = count
-
-    #@profile
+    @profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
@@ -70,26 +63,23 @@ class MainWindow(QMainWindow):
         DIContainer.scene.clear_scene()
         files = os.listdir(directory)
 
-        ratios = {}
-        keep_aspect_ratios = self.scene_manager.keep_aspect_ratios
-        if keep_aspect_ratios:
-            ratios = ResourcesManager.get_ratios(directory, files, count)
-        else:
-            DIContainer.plane_mesh = MeshBuilder.create_plane_mesh(width=1, height=1)
-
-        # print(len(self.ratios.keys()))
-        # sortedRatios = sorted(self.ratios.keys())
-        # for i in sortedRatios:
-        #     print("Ratio: " + i + " Count: " + str(self.ratios[i]))
+        DIContainer.plane_mesh = MeshBuilder.create_plane_mesh(width=1, height=1)
 
         self.scene_manager.image_count = count
         positions = self.scene_manager.calculate_positions(count)
 
         for i in range(0, count):
             path = files[i]
+            ratio = 1
+
+            if self.scene_manager.keep_aspect_ratios:
+                full_path = os.path.join(directory, files[i])
+                width, height = imagesize.get(full_path)
+                ratio = width / height
+
             position = positions[i]
             rotation = QQuaternion.fromEulerAngles(90, 0, 0)
-            scale = QVector3D(1, 1, 1)
+            scale = QVector3D(ratio, 1, 1)
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
