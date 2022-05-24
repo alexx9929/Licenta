@@ -35,12 +35,15 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
 
         # define colors to plot the histograms
         colors = ('b', 'g', 'r')
+        self.histogram = []
 
         # compute and plot the image histograms
         for i, color in enumerate(colors):
             hist = cv2.calcHist([cv_img], [i], None, [256], [0, 256])
-            plt.plot(hist, color=color)
-        plt.title('Histogram of ' + self.filename)
-        plt.show()
+            #plt.plot(hist, color=color)
+            self.histogram.append(hist)
+
+        # plt.title('Histogram of ' + self.filename)
+        # plt.show()
 
         painter.drawImage(QRect(0, 0, self.width(), self.height()), image)
