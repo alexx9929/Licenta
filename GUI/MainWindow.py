@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         # Image loading buttons
+        #self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\low contrast'
         self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),

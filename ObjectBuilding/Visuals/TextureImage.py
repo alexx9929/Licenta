@@ -14,12 +14,15 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         super().__init__()
         # Variables
         self.filename = filename
+        #self.plotted = False
 
         # Setting sizes
         self.setWidth(width)
         self.setHeight(height)
 
         self.histogram = None
+        #self.cumulative_histogram = None
+
         pass
 
     def paint(self, painter: QPainter):
@@ -36,14 +39,30 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         # define colors to plot the histograms
         colors = ('b', 'g', 'r')
         self.histogram = []
+        #self.cumulative_histogram = []
 
         # compute and plot the image histograms
+        # if not self.plotted:
+        #     plt.figure()
+        #     plt.title('Color distribution ' + self.filename)
+
         for i, color in enumerate(colors):
             hist = cv2.calcHist([cv_img], [i], None, [256], [0, 256])
-            #plt.plot(hist, color=color)
             self.histogram.append(hist)
+            #flattened = hist.flatten()
+            #self.cumulative_histogram.append(np.cumsum(flattened))
 
-        # plt.title('Histogram of ' + self.filename)
-        # plt.show()
+        #     if not self.plotted:
+        #         plt.plot(hist, color=color)
+        #
+        # if not self.plotted:
+        #     plt.figure()
+        #     plt.title('Color distribution ' + self.filename)
+        #     plt.plot(self.cumulative_histogram[0], color='b')
+        #     plt.plot(self.cumulative_histogram[1], color='g')
+        #     plt.plot(self.cumulative_histogram[2], color='r')
+        #     plt.title('Intensities ' + self.filename)
+        #     plt.show()
+        #     self.plotted = True
 
         painter.drawImage(QRect(0, 0, self.width(), self.height()), image)
