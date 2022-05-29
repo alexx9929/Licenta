@@ -26,16 +26,18 @@ def images_histograms():
 
 
 def color_channels_means():
-    b_mean = []
-    r_mean = []
-    g_mean = []
+    r, g, b = MiscFunctions.get_channels_means()
+    scatter_plot(r, g, b)
 
-    for i in MiscFunctions.get_all_texture_images():
-        b_mean.append(i.channel_means[0])
-        g_mean.append(i.channel_means[1])
-        r_mean.append(i.channel_means[2])
 
-    scatter_plot(r_mean, b_mean, g_mean)
+def ml_color_channels_scatter(r_means, g_means, b_means, classes):
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(r_means, g_means, b_means, c=classes, cmap='viridis')
+    ax.set_xlabel('R channel mean')
+    ax.set_ylabel('G channel mean')
+    ax.set_zlabel('B channel mean')
+    plt.show()
 
 
 def scatter_plot(x_data, y_data, z_data):

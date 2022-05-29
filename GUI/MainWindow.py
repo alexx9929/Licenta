@@ -10,6 +10,7 @@ from ObjectBuilding.ObjectBuilder import ObjectBuilder
 from Utilities import MiscFunctions, DataVisualization
 from memory_profiler import profile
 import imagesize
+from sklearn.cluster import KMeans
 
 
 class MainWindow(QMainWindow):
@@ -27,9 +28,7 @@ class MainWindow(QMainWindow):
         self.central_widget.setLayout(self.grid)
         self.setCentralWidget(self.central_widget)
 
-        # self.showMaximized()
-        self.setMinimumWidth(2560)
-        self.setMinimumHeight(1336)
+        self.setGeometry(QRect(0, 0, 2533, 1336))
 
         # Top buttons
         self.top_buttons = QWidget(self)
@@ -85,7 +84,13 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        DataVisualization.color_channels_means()
-        DataVisualization.images_histograms()
+        # Machine learning
+        data = MiscFunctions.get_channels_means_array()
+        k_means = KMeans(n_clusters=10, init='k-means++', max_iter=300, n_init=10, random_state=0)
+        model = k_means.fit(data)
+        predicted_values = k_means.predict(data)
 
+        # Plotting results
+        r, g, b = MiscFunctions.get_channels_means()
+        DataVisualization.ml_color_channels_scatter(r, g, b, predicted_values)
         DIContainer.scene.cameraController.center_camera()
