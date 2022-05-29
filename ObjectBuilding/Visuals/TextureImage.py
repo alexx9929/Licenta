@@ -25,17 +25,21 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
 
     def paint(self, painter: QPainter):
         path = os.path.join(DIContainer.main_window.defaultImageDirectory, self.filename)
+
+        # Loading image with cv2
         cv_img = cv2.imread(path)
         height, width, channel = cv_img.shape
         bytes_per_line = 3 * width
+
+        # Creating a QImage from the cv2 image
         image = QImage(cv_img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped().scaled(
             QSize(self.width(), self.height()), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
 
-        # define colors to plot the histograms
+        # Define colors to plot the histograms
         colors = ('b', 'g', 'r')
         self.histogram = []
 
-        # compute and plot the image histograms
+        # Compute the image histograms and channel means
         for i, color in enumerate(colors):
             self.channel_means = cv2.mean(cv_img)[:3]
             hist = cv2.calcHist([cv_img], [i], None, [256], [0, 256])

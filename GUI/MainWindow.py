@@ -1,4 +1,4 @@
-import DIContainer, os, sys, math
+import DIContainer, os, sys, math, ImageSearcher
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import QRect, QSize, Qt
@@ -11,6 +11,7 @@ from Utilities import MiscFunctions, DataVisualization
 from memory_profiler import profile
 import imagesize
 from sklearn.cluster import KMeans
+from ImageSearcher import ImageSearcher
 
 
 class MainWindow(QMainWindow):
@@ -20,6 +21,7 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.grid = QGridLayout()
         self.scene_manager = DIContainer.scene_manager
+        self.image_searcher = ImageSearcher()
 
         # Variables
         self.textureSize = 255
@@ -84,13 +86,6 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        # Machine learning
-        data = MiscFunctions.get_channels_means_array()
-        k_means = KMeans(n_clusters=10, init='k-means++', max_iter=300, n_init=10, random_state=0)
-        model = k_means.fit(data)
-        predicted_values = k_means.predict(data)
-
-        # Plotting results
-        r, g, b = MiscFunctions.get_channels_means()
-        DataVisualization.ml_color_channels_scatter(r, g, b, predicted_values)
+        self.image_searcher.get_predicted_values()
+        # Centering camera
         DIContainer.scene.cameraController.center_camera()
