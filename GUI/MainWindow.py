@@ -7,7 +7,7 @@ from ObjectBuilding.Visuals import MeshBuilder
 from time import perf_counter
 from ResourcesManagement.ResourcesManager import ResourcesManager
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
-from Utilities import MiscFunctions
+from Utilities import MiscFunctions, DataVisualization
 from memory_profiler import profile
 import imagesize
 
@@ -45,18 +45,19 @@ class MainWindow(QMainWindow):
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         # Image loading buttons
-        #self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\low contrast'
+        # self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\low contrast'
         self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
                                                 self.scene_manager.image_count))
 
         self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
-        self.imageCountLineEdit.textChanged.connect(lambda x: self.scene_manager.set_image_count(int(self.imageCountLineEdit.text())))
+        self.imageCountLineEdit.textChanged.connect(
+            lambda x: self.scene_manager.set_image_count(int(self.imageCountLineEdit.text())))
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
 
-    @profile
+    # @profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
@@ -84,7 +85,7 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
+        DataVisualization.color_channels_means()
+        DataVisualization.images_histograms()
+
         DIContainer.scene.cameraController.center_camera()
-
-
-
