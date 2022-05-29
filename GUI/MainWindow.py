@@ -86,6 +86,6 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        self.image_searcher.get_predicted_values()
+        self.image_searcher.search_image("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg")
         # Centering camera
         DIContainer.scene.cameraController.center_camera()

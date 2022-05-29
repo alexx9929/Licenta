@@ -38,21 +38,4 @@ def get_all_texture_images():
     return texture_images
 
 
-def get_channels_means():
-    r_mean = []
-    g_mean = []
-    b_mean = []
 
-    for i in get_all_texture_images():
-        r_mean.append(i.channel_means[2])
-        g_mean.append(i.channel_means[1])
-        b_mean.append(i.channel_means[0])
-
-    return r_mean, g_mean, b_mean
-
-
-def get_channels_means_array():
-    array = []
-    for i in get_all_texture_images():
-        array.append([i.channel_means[2], i.channel_means[1], i.channel_means[0]])
-    return array

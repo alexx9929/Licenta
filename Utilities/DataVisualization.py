@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 from Utilities import MiscFunctions
 from ObjectBuilding.Visuals.TextureImage import TextureImage
+from Utilities import ImagesUtilities
+
 
 # def show_image_contrast_histogram():
 #     plt.figure()
@@ -14,9 +16,9 @@ from ObjectBuilding.Visuals.TextureImage import TextureImage
 
 def image_histogram(image: TextureImage):
     plt.figure()
-    plt.plot(image.histogram[0], "b")
-    plt.plot(image.histogram[1], "g")
-    plt.plot(image.histogram[2], "r")
+    plt.plot(image.histograms[0], "r")
+    plt.plot(image.histograms[1], "g")
+    plt.plot(image.histograms[2], "b")
     plt.show()
 
 
@@ -26,7 +28,7 @@ def images_histograms():
 
 
 def color_channels_means():
-    r, g, b = MiscFunctions.get_channels_means()
+    r, g, b = ImagesUtilities.get_channels_means()
     scatter_plot(r, g, b)
 
 
@@ -45,4 +47,3 @@ def scatter_plot(x_data, y_data, z_data):
     ax = plt.axes(projection='3d')
     ax.scatter3D(x_data, y_data, z_data, cmap='Greens')
     plt.show()
-
