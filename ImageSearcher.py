@@ -15,13 +15,14 @@ class ImageSearcher:
         self.k = 0
         pass
 
-    def search_image(self, path, predicted_values):
+    def get_image_cluster(self, path, predicted_values):
         image = cv2.imread(path)
         print("Searching image: " + path)
         t1 = perf_counter()
         image_class = self.get_image_class(image, predicted_values)
         t2 = perf_counter()
         print("Searching time: " + str(t2 - t1)[:5])
+        return image_class
         # correlations = self.get_histogram_correlations(cv_img)
 
     def test_n_image_search(self, n, predicted_values):
@@ -145,7 +146,6 @@ class ImageSearcher:
         knn.fit(data, predicted_values)
         predicted_class = knn.predict(converted_array)
 
-        #print("Predicted class: " + str(predicted_class[0]))
         return predicted_class
 
     @staticmethod

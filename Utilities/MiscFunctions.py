@@ -1,7 +1,16 @@
 import math, sys, gc, pympler
+
+import numpy as np
 from pympler import asizeof
 import DIContainer
 
+
+def get_classes_counts(k, predicted_values):
+    counts = np.zeros(k, dtype='int')
+    for i in range(0, len(predicted_values)):
+        counts[predicted_values[i]] += 1
+
+    return counts
 
 def actual_size(input_obj):
     memory_size = 0
@@ -36,6 +45,3 @@ def get_all_texture_images():
         texture_images.append(obj.material.texture_image)
 
     return texture_images
-
-
-

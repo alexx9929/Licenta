@@ -93,7 +93,14 @@ class MainWindow(QMainWindow):
         print("Machine learning time: " + str(t2 - t1)[:4])
 
         # Searching for an image
-        self.image_searcher.search_image("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg", predicted_values)
+        image_cluster = self.image_searcher.get_image_cluster("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg", predicted_values)
+        classes_counts = MiscFunctions.get_classes_counts(self.image_searcher.k, predicted_values)
+        print(classes_counts)
+
+        # print("Keeping cluster " + str(image_cluster) + " active")
+        # for i in range(0, len(predicted_values)):
+        #     if predicted_values[i] != image_cluster:
+        #         DIContainer.scene.objects[i].setEnabled(False)
 
         # Centering camera
         DIContainer.scene.cameraController.center_camera()
