@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from scipy.spatial.distance import cdist
 from kneed import KneeLocator
+from time import perf_counter
 
 
 class ImageSearcher:
@@ -14,11 +15,41 @@ class ImageSearcher:
         self.k = 0
         pass
 
-    def search_image(self, path, predicted_values, centroids):
+    def search_image(self, path, predicted_values):
         image = cv2.imread(path)
         print("Searching image: " + path)
+        t1 = perf_counter()
         image_class = self.get_image_class(image, predicted_values)
+        t2 = perf_counter()
+        print("Searching time: " + str(t2 - t1)[:5])
         # correlations = self.get_histogram_correlations(cv_img)
+
+    def test_n_image_search(self, n, predicted_values):
+        passed_tests = 0
+        failed_tests = 0
+
+        for i in range(0, n):
+            value = self.test_image_search(predicted_values)
+            if value:
+                passed_tests += 1
+            else:
+                failed_tests += 1
+
+        print("Passed tests: " + str(passed_tests))
+        print("Failed tests: " + str(failed_tests))
+
+    def test_image_search(self, predicted_values):
+        image_index = np.random.randint(len(predicted_values) - 1)
+        obj = MiscFunctions.get_all_texture_images()[image_index]
+        path = obj.get_full_path()
+        image_class = predicted_values[image_index]
+        image = cv2.imread(path)
+
+        # print("Image index: " + str(image_index))
+        # print("Searching " + path)
+        # print("Image class: " + str(image_class))
+        predicted_class = self.get_image_class(image, predicted_values)
+        return predicted_class == image_class
 
     def get_histogram_correlations(self, searched_image):
         histograms = ImagesUtilities.get_image_histograms(searched_image)
@@ -114,8 +145,7 @@ class ImageSearcher:
         knn.fit(data, predicted_values)
         predicted_class = knn.predict(converted_array)
 
-        print("Class of first image: " + str(predicted_values[0]))
-        print("Predicted class: " + str(predicted_class[0]))
+        #print("Predicted class: " + str(predicted_class[0]))
         return predicted_class
 
     @staticmethod

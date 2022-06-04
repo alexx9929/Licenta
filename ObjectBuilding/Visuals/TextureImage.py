@@ -25,7 +25,7 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         pass
 
     def paint(self, painter: QPainter):
-        path = os.path.join(DIContainer.main_window.defaultImageDirectory, self.filename)
+        path = self.get_full_path()
 
         # Loading image with cv2
         cv_img = cv2.imread(path)
@@ -41,3 +41,6 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         self.histograms = ImagesUtilities.get_image_histograms(cv_img)
 
         painter.drawImage(QRect(0, 0, self.width(), self.height()), image)
+
+    def get_full_path(self):
+        return os.path.join(DIContainer.main_window.defaultImageDirectory, self.filename)

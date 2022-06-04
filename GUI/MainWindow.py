@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         print("Machine learning time: " + str(t2 - t1)[:4])
 
         # Searching for an image
-        self.image_searcher.search_image("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg", predicted_values, centroids)
+        self.image_searcher.search_image("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg", predicted_values)
 
         # Centering camera
         DIContainer.scene.cameraController.center_camera()
