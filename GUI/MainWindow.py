@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         DIContainer.default_mesh = MeshBuilder.create_plane_mesh()
 
         self.scene_manager.image_count = count
-        positions = self.scene_manager.calculate_positions(count)
+        positions = self.scene_manager.calculate_all_positions(count)
 
         for i in range(0, count):
             path = files[i]
@@ -93,14 +93,20 @@ class MainWindow(QMainWindow):
         print("Machine learning time: " + str(t2 - t1)[:4])
 
         # Searching for an image
-        image_cluster = self.image_searcher.get_image_cluster("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg", predicted_values)
+        image_cluster = self.image_searcher.get_image_cluster("C:\\Users\\serba\\Desktop\\train2017\\000000000338.jpg", predicted_values)
         classes_counts = MiscFunctions.get_classes_counts(self.image_searcher.k, predicted_values)
         print(classes_counts)
 
-        # print("Keeping cluster " + str(image_cluster) + " active")
-        # for i in range(0, len(predicted_values)):
-        #     if predicted_values[i] != image_cluster:
-        #         DIContainer.scene.objects[i].setEnabled(False)
+        # Deactivating other clusters
+        cluster_positions = self.scene_manager.calculate_all_positions(int(classes_counts[image_cluster]))
+        position_index = -1
+        print("Keeping cluster " + str(image_cluster) + " active")
+        for i in range(0, len(predicted_values)):
+            if predicted_values[i] != image_cluster:
+                DIContainer.scene.objects[i].setEnabled(False)
+            else:
+                position_index += 1
+                DIContainer.scene.objects[i].transform.setTranslation(cluster_positions[position_index])
 
         # Centering camera
         DIContainer.scene.cameraController.center_camera()

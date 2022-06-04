@@ -37,7 +37,7 @@ class SceneManager:
         self.normal_deviation[1] = square_root * 0.5
         self.normal_deviation[2] = square_root * 0.25
 
-    def calculate_positions(self, count):
+    def calculate_all_positions(self, count):
         positions = []
         if self.image_distribution == Distribution.normal:
             self.calculate_normal_distribution(count)

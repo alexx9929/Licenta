@@ -146,7 +146,7 @@ class ImageSearcher:
         knn.fit(data, predicted_values)
         predicted_class = knn.predict(converted_array)
 
-        return predicted_class
+        return predicted_class[0]
 
     @staticmethod
     def euclidian_distance_array(a1, a2):
