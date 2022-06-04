@@ -86,10 +86,13 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
+        # Data segmentation
         t1 = perf_counter()
         predicted_values, centroids = self.image_searcher.get_predicted_values()
         t2 = perf_counter()
         print("Machine learning time: " + str(t2 - t1)[:4])
+
+        # Searching for an image
         self.image_searcher.search_image("C:\\Users\\serba\\Desktop\\train2017\\000000000009.jpg", predicted_values, centroids)
 
         # Centering camera

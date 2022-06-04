@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+
 from Utilities import MiscFunctions
 
 
@@ -35,3 +37,8 @@ def get_channels_means_array():
     for i in MiscFunctions.get_all_texture_images():
         array.append([i.channels_means[2], i.channels_means[1], i.channels_means[0]])
     return array
+
+
+def swap_channels(channels_array):
+    """Used to swap from BGR to RGB"""
+    return np.array([channels_array[2], channels_array[1], channels_array[0]])
