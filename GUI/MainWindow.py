@@ -40,13 +40,15 @@ class MainWindow(QMainWindow):
         self.loadImagesButton = QPushButton("Load images")
         self.loadSingleImageButton = QPushButton("Load single image")
         self.imageCountLineEdit = QLineEdit()
+        self.searchImageButton = QPushButton("Search image")
 
+        # Adding buttons to layout
         self.top_layout.addWidget(self.loadImagesButton)
         self.top_layout.addWidget(self.imageCountLineEdit)
+        self.top_layout.addWidget(self.searchImageButton)
         self.top_buttons.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
-        # Image loading buttons
-        # self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\low contrast'
+        # Buttons actions
         self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
         self.loadImagesButton.clicked.connect(
             lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
@@ -55,10 +57,17 @@ class MainWindow(QMainWindow):
         self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
         self.imageCountLineEdit.textChanged.connect(
             lambda x: self.scene_manager.set_image_count(int(self.imageCountLineEdit.text())))
+        self.searchImageButton.clicked.connect(
+            lambda x: self.search_button_action(
+                QFileDialog.getOpenFileName(self, caption='Select image', filter="JPEG (*.jpg *.jpeg)")[0]))
+
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
 
-    # @profile
+    def search_button_action(self, path: str):
+        if not path or path == "":
+            return
+
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
@@ -93,7 +102,8 @@ class MainWindow(QMainWindow):
         print("Machine learning time: " + str(t2 - t1)[:4])
 
         # Searching for an image
-        image_cluster = self.image_searcher.get_image_cluster("C:\\Users\\serba\\Desktop\\train2017\\000000000338.jpg", predicted_values)
+        image_cluster = self.image_searcher.get_image_cluster("C:\\Users\\serba\\Desktop\\train2017\\000000000326.jpg",
+                                                              predicted_values)
         classes_counts = MiscFunctions.get_classes_counts(self.image_searcher.k, predicted_values)
         print(classes_counts)
 

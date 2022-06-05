@@ -15,6 +15,18 @@ class ImageSearcher:
         self.k = 0
         pass
 
+    def segment_data(self):
+        """Applies a K-means algorithm to segment the data"""
+        t1 = perf_counter()
+        predicted_values, centroids = self.get_predicted_values()
+        t2 = perf_counter()
+        print("Machine learning time: " + str(t2 - t1)[:4])
+        pass
+
+    def search_image(self, path, predicted_values):
+        """Searches the image through the clusters"""
+        pass
+
     def get_image_cluster(self, path, predicted_values):
         image = cv2.imread(path)
         print("Searching image: " + path)
