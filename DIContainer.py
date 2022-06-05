@@ -4,3 +4,4 @@ window_container = None
 main_window = None
 default_mesh = None
 scene_manager = None
+image_searcher = None

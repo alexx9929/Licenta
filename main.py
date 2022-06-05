@@ -4,12 +4,14 @@ from PySide6.Qt3DExtras import Qt3DExtras
 from Scene import Scene
 from GUI.MainWindow import MainWindow
 from ResourcesManagement import SceneManager
+from ImageSearcher import ImageSearcher
 
 # Set up the application window
 app = QApplication(sys.argv)
 view = DIContainer.view = Qt3DExtras.Qt3DWindow()
 scene_manager = DIContainer.scene_manager = SceneManager.SceneManager()
 container = DIContainer.window_container = QWidget.createWindowContainer(view)
+image_searcher = DIContainer.image_searcher = ImageSearcher()
 window = DIContainer.main_window = MainWindow()
 
 scene = DIContainer.scene = Scene()

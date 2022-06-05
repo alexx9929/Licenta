@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.grid = QGridLayout()
         self.scene_manager = DIContainer.scene_manager
-        self.image_searcher = ImageSearcher()
+        self.image_searcher = DIContainer.image_searcher
 
         # Variables
         self.textureSize = 255
@@ -68,6 +68,8 @@ class MainWindow(QMainWindow):
         if not path or path == "":
             return
 
+        self.image_searcher.search_image(path)
+
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
@@ -95,28 +97,7 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        # Data segmentation
-        t1 = perf_counter()
-        predicted_values, centroids = self.image_searcher.get_predicted_values()
-        t2 = perf_counter()
-        print("Machine learning time: " + str(t2 - t1)[:4])
-
-        # Searching for an image
-        image_cluster = self.image_searcher.get_image_cluster("C:\\Users\\serba\\Desktop\\train2017\\000000000326.jpg",
-                                                              predicted_values)
-        classes_counts = MiscFunctions.get_classes_counts(self.image_searcher.k, predicted_values)
-        print(classes_counts)
-
-        # Deactivating other clusters
-        cluster_positions = self.scene_manager.calculate_all_positions(int(classes_counts[image_cluster]))
-        position_index = -1
-        print("Keeping cluster " + str(image_cluster) + " active")
-        for i in range(0, len(predicted_values)):
-            if predicted_values[i] != image_cluster:
-                DIContainer.scene.objects[i].setEnabled(False)
-            else:
-                position_index += 1
-                DIContainer.scene.objects[i].transform.setTranslation(cluster_positions[position_index])
+        self.image_searcher.segment_data()
 
         # Centering camera
         DIContainer.scene.cameraController.center_camera()

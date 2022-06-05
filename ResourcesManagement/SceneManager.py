@@ -3,6 +3,8 @@ import numpy as np
 from enum import Enum
 from ObjectBuilding.GameObject import GameObject
 from PySide6.QtGui import QVector3D
+import DIContainer
+from Utilities import MiscFunctions
 
 
 class Distribution(Enum):
@@ -59,3 +61,19 @@ class SceneManager:
                 positions.append(QVector3D(x_pos, y_pos, z_pos))
 
         return positions
+
+    def keep_one_cluster_active(self, image_cluster):
+        """Deactivates other clusters and repositions the images from the given one"""
+        predicted_values = DIContainer.image_searcher.predicted_values
+        classes_counts = MiscFunctions.get_classes_counts()
+        print(classes_counts)
+        cluster_positions = self.calculate_all_positions(int(classes_counts[image_cluster]))
+        position_index = -1
+        print("Keeping cluster " + str(image_cluster) + " active")
+        for i in range(0, len(predicted_values)):
+            if predicted_values[i] != image_cluster:
+                DIContainer.scene.objects[i].setEnabled(False)
+            else:
+                position_index += 1
+                DIContainer.scene.objects[i].setEnabled(True)
+                DIContainer.scene.objects[i].transform.setTranslation(cluster_positions[position_index])

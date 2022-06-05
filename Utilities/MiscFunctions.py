@@ -5,12 +5,16 @@ from pympler import asizeof
 import DIContainer
 
 
-def get_classes_counts(k, predicted_values):
+def get_classes_counts():
+    """Returns how many images contains each cluster"""
+    k = DIContainer.image_searcher.k
+    predicted_values = DIContainer.image_searcher.predicted_values
     counts = np.zeros(k, dtype='int')
     for i in range(0, len(predicted_values)):
         counts[predicted_values[i]] += 1
 
     return counts
+
 
 def actual_size(input_obj):
     memory_size = 0

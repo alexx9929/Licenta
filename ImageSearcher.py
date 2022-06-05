@@ -13,25 +13,28 @@ class ImageSearcher:
 
     def __init__(self):
         self.k = 0
+        self.predicted_values = None
         pass
 
     def segment_data(self):
         """Applies a K-means algorithm to segment the data"""
         t1 = perf_counter()
-        predicted_values, centroids = self.get_predicted_values()
+        self.predicted_values = self.get_predicted_values()
         t2 = perf_counter()
         print("Machine learning time: " + str(t2 - t1)[:4])
         pass
 
-    def search_image(self, path, predicted_values):
-        """Searches the image through the clusters"""
+    def search_image(self, path):
+        """Searches the image through the clusters using a KNN algorithm"""
+        image_cluster = self.get_image_cluster(path)
+        DIContainer.scene_manager.keep_one_cluster_active(image_cluster)
         pass
 
-    def get_image_cluster(self, path, predicted_values):
+    def get_image_cluster(self, path):
         image = cv2.imread(path)
         print("Searching image: " + path)
         t1 = perf_counter()
-        image_class = self.get_image_class(image, predicted_values)
+        image_class = self.get_image_class(image)
         t2 = perf_counter()
         print("Searching time: " + str(t2 - t1)[:5])
         return image_class
@@ -61,7 +64,7 @@ class ImageSearcher:
         # print("Image index: " + str(image_index))
         # print("Searching " + path)
         # print("Image class: " + str(image_class))
-        predicted_class = self.get_image_class(image, predicted_values)
+        predicted_class = self.get_image_class(image)
         return predicted_class == image_class
 
     def get_histogram_correlations(self, searched_image):
@@ -143,9 +146,9 @@ class ImageSearcher:
         # Plotting results
         r, g, b = ImagesUtilities.get_channels_means()
         DataVisualization.ml_color_channels_scatter(r, g, b, predicted_values)
-        return predicted_values, k_means.cluster_centers_
+        return predicted_values
 
-    def get_image_class(self, image, predicted_values):
+    def get_image_class(self, image):
         data = ImagesUtilities.get_channels_means_array()
         # self.get_optimal_neighbors(image, data, predicted_values)
 
@@ -155,7 +158,7 @@ class ImageSearcher:
 
         # Using the KNN algorithm
         knn = KNeighborsClassifier(n_neighbors=3, weights='distance')
-        knn.fit(data, predicted_values)
+        knn.fit(data, self.predicted_values)
         predicted_class = knn.predict(converted_array)
 
         return predicted_class[0]
