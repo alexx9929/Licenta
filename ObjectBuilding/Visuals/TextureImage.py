@@ -40,7 +40,7 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         # Calculating parameters necessary for computer vision
         self.channels_means = cv2.mean(cv_img)[:3]
         # self.histograms = ImagesUtilities.get_image_histograms(cv_img)
-        self.histogram = self.image_histogram(cv_img, 'RGB', 256)
+        self.histogram = self.image_histogram(cv_img, 'HSV', 256)
         painter.drawImage(QRect(0, 0, self.width(), self.height()), image)
 
     def image_histogram(self, img, color_space, bins):

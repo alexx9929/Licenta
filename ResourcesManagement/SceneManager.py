@@ -62,7 +62,7 @@ class SceneManager:
 
         return positions
 
-    def generate_cluster_positions(self, means: list, count):
+    def generate_cluster_positions(self, means: list, deviations: list, count):
         """Generates positions for a cluster based on a normal distribution algorithm"""
         # Calculating distributions
         deviation = []
@@ -72,9 +72,9 @@ class SceneManager:
         deviation.append(square_root * 0.5)
         deviation.append(square_root * 0.5)
 
-        distributions = (np.random.normal(means[0], deviation[0], count),
-                         np.random.normal(means[1], deviation[1], count),
-                         np.random.normal(means[2], deviation[2], count))
+        distributions = (np.random.normal(means[0], deviations[0], count),
+                         np.random.normal(means[1], deviations[1], count),
+                         np.random.normal(means[2], deviations[2], count))
 
         # Generating positions
         positions = []
@@ -105,11 +105,26 @@ class SceneManager:
         predicted_values = DIContainer.image_searcher.predicted_values
         objects = DIContainer.scene.objects
 
+        print(classes_counts)
         # Generating positions matrix that holds all positions for every cluster
         positions_matrix = []
+        last_x_deviation = 0
+        last_x_mean = 0
+        x_offset = 2
+
         for i in range(0, number_of_clusters):
-            means = [i * 10, i * 10, i * 10]
-            positions_matrix.append(self.generate_cluster_positions(means, classes_counts[i]))
+            number_of_images_in_cluster = classes_counts[i]
+
+            # Calculating deviations of the cluster
+            square_root = math.sqrt(number_of_images_in_cluster)
+            deviations = [square_root * 0.5, square_root * 0.5, square_root * 0.5]
+
+            # Calculating means for a new normal distribution
+            new_x_mean = last_x_mean + last_x_deviation * 3 + deviations[0] * 3 + x_offset
+            last_x_deviation = deviations[0]
+            last_x_mean = new_x_mean
+
+            positions_matrix.append(self.generate_cluster_positions([new_x_mean, 0, 0], deviations, classes_counts[i]))
 
         # Grouping the images
         positions_counter_matrix = np.zeros(number_of_clusters, dtype='int')
