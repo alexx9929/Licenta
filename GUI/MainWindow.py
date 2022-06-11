@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        self.image_searcher.segment_data()
+        self.image_searcher.start_classification_using_color_channels()
 
         # Centering camera
         DIContainer.scene.cameraController.center_camera()

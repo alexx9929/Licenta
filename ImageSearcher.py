@@ -16,8 +16,12 @@ class ImageSearcher:
         self.predicted_values = None
         pass
 
-    def segment_data(self):
-        """Applies a K-means algorithm to segment the data"""
+    def start_classification_using_histograms(self):
+
+        pass
+
+    def start_classification_using_color_channels(self):
+        """Applies a K-means algorithm to classify the data using the color channels of the images"""
         t1 = perf_counter()
         self.predicted_values = self.get_predicted_values()
         t2 = perf_counter()
@@ -136,7 +140,7 @@ class ImageSearcher:
     def get_predicted_values(self):
         # Machine learning
         data = ImagesUtilities.get_channels_means_array()
-        self.k = self.get_optimal_k(data, True)
+        self.k = 1000  # self.get_optimal_k(data, True)
 
         print("Optimal K: " + str(self.k))
         k_means = KMeans(n_clusters=self.k, init='k-means++', max_iter=300, n_init=10, random_state=0)
@@ -150,7 +154,6 @@ class ImageSearcher:
 
     def get_image_class(self, image):
         data = ImagesUtilities.get_channels_means_array()
-        # self.get_optimal_neighbors(image, data, predicted_values)
 
         # Preparing the image data
         array = ImagesUtilities.swap_channels(cv2.mean(image)[:3])
