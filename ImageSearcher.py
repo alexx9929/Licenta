@@ -16,14 +16,10 @@ class ImageSearcher:
         self.predicted_values = None
         pass
 
-    def start_classification_using_histograms(self):
-
-        pass
-
-    def start_classification_using_color_channels(self):
-        """Applies a K-means algorithm to classify the data using the color channels of the images"""
+    def start_classification(self, use_histograms):
+        """Applies a K-means algorithm to classify the data using histograms or the color channels of the images"""
         t1 = perf_counter()
-        self.predicted_values = self.get_predicted_values()
+        self.predicted_values = self.get_predicted_values(use_histograms)
         t2 = perf_counter()
         print("Machine learning time: " + str(t2 - t1)[:4])
         pass
@@ -111,45 +107,19 @@ class ImageSearcher:
         plt.show()
         return kneedle.knee
 
-    def get_optimal_neighbors(self, image, data, predicted_values):
-        max_k = math.floor(math.sqrt(len(predicted_values)))
-        scores = []
-        data = np.array(data)
-        k_values = []
-
-        # Image data
-        array = ImagesUtilities.swap_channels(cv2.mean(image)[:3])
-        converted_array = np.array(array).reshape(1, -1)
-
-        print("Searched array: " + str(converted_array))
-        print("Data: " + str(data))
-        for k in range(1, max_k + 1):
-            k_values.append(k)
-            knn = KNeighborsClassifier(n_neighbors=k, weights='distance')
-            knn.fit(data, predicted_values)
-            predicted_class = knn.predict(converted_array)
-            score = 1 if predicted_class[0] == predicted_values[0] else 0
-            scores.append(score)
-
-        plt.figure()
-        plt.title("Optimal neighbours using distance")
-        plt.plot(scores)
-        plt.show()
-        return
-
-    def get_predicted_values(self):
+    def get_predicted_values(self, use_histograms):
         # Machine learning
-        data = ImagesUtilities.get_channels_means_array()
-        self.k = 1000  # self.get_optimal_k(data, True)
+        data = ImagesUtilities.get_histograms() if use_histograms else ImagesUtilities.get_channels_means_array()
+        self.k = self.get_optimal_k(data, True)
 
         print("Optimal K: " + str(self.k))
-        k_means = KMeans(n_clusters=self.k, init='k-means++', max_iter=300, n_init=10, random_state=0)
+        k_means = KMeans(n_clusters=self.k)
         model = k_means.fit(data)
         predicted_values = k_means.predict(data)
 
-        # Plotting results
-        r, g, b = ImagesUtilities.get_channels_means()
-        DataVisualization.ml_color_channels_scatter(r, g, b, predicted_values)
+        # # Plotting results
+        # r, g, b = ImagesUtilities.get_channels_means()
+        # DataVisualization.ml_color_channels_scatter(r, g, b, predicted_values)
         return predicted_values
 
     def get_image_class(self, image):

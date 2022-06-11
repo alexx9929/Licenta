@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
             lambda x: self.scene_manager.set_image_count(int(self.imageCountLineEdit.text())))
         self.searchImageButton.clicked.connect(
             lambda x: self.search_button_action(
-                QFileDialog.getOpenFileName(self, caption='Select image', filter="JPEG (*.jpg *.jpeg)")[0]))
+                QFileDialog.getOpenFileName(self, dir=self.defaultImageDirectory, caption='Select image', filter="JPEG (*.jpg *.jpeg)")[0]))
 
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
 
             ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
 
-        self.image_searcher.start_classification_using_color_channels()
+        self.image_searcher.start_classification(True)
 
         # Centering camera
         DIContainer.scene.cameraController.center_camera()

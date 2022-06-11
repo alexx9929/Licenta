@@ -4,16 +4,6 @@ from ObjectBuilding.Visuals.TextureImage import TextureImage
 from Utilities import ImagesUtilities
 
 
-# def show_image_contrast_histogram():
-#     plt.figure()
-#     plt.title('Color distribution ' + self.filename)
-#     plt.plot(self.cumulative_histogram[0], color='b')
-#     plt.plot(self.cumulative_histogram[1], color='g')
-#     plt.plot(self.cumulative_histogram[2], color='r')
-#     plt.title('Intensities ' + self.filename)
-#     plt.show()
-
-
 def image_histogram(image: TextureImage):
     plt.figure()
     plt.plot(image.histograms[0], "r")

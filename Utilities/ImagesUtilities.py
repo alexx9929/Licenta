@@ -39,6 +39,14 @@ def get_channels_means_array():
     return array
 
 
+def get_histograms():
+    array = []
+    for i in MiscFunctions.get_all_texture_images():
+        array.append(i.histogram)
+
+    return array
+
+
 def swap_channels(channels_array):
     """Used to swap from BGR to RGB"""
     return np.array([channels_array[2], channels_array[1], channels_array[0]])

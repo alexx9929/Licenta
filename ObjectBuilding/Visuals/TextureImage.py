@@ -17,6 +17,7 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         self.filename = filename
 
         # Computer vision
+        self.histogram = None
         self.histograms = None
         self.channels_means = None
 
@@ -38,9 +39,31 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
 
         # Calculating parameters necessary for computer vision
         self.channels_means = cv2.mean(cv_img)[:3]
-        self.histograms = ImagesUtilities.get_image_histograms(cv_img)
-
+        # self.histograms = ImagesUtilities.get_image_histograms(cv_img)
+        self.histogram = self.image_histogram(cv_img, 'RGB', 256)
         painter.drawImage(QRect(0, 0, self.width(), self.height()), image)
+
+    def image_histogram(self, img, color_space, bins):
+        if color_space == 'HSV':
+            code = cv2.COLOR_BGR2HSV
+            max_val = [360, 1, 256]
+        else:
+            if color_space == 'RGB':
+                code = cv2.COLOR_BGR2RGB
+                max_val = [256, 256, 256]
+            else:
+                print('Invalid colorspace')
+                return
+
+        img = cv2.cvtColor(img, code=code)
+        concat_hist = []
+
+        for i in range(3):
+            channel = img[:, :, i]
+            hist = cv2.calcHist([channel], [0], None, [bins], [0, max_val[i]])
+            concat_hist.append(hist)
+
+        return np.array(concat_hist).flatten()
 
     def get_full_path(self):
         return os.path.join(DIContainer.main_window.defaultImageDirectory, self.filename)
