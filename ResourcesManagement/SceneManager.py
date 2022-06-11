@@ -62,11 +62,31 @@ class SceneManager:
 
         return positions
 
+    def generate_cluster_positions(self, means: list, count):
+        """Generates positions for a cluster based on a normal distribution algorithm"""
+        # Calculating distributions
+        deviation = []
+        square_root = math.sqrt(count)
+
+        deviation.append(square_root * 0.5)
+        deviation.append(square_root * 0.5)
+        deviation.append(square_root * 0.5)
+
+        distributions = (np.random.normal(means[0], deviation[0], count),
+                         np.random.normal(means[1], deviation[1], count),
+                         np.random.normal(means[2], deviation[2], count))
+
+        # Generating positions
+        positions = []
+        for i in range(0, count):
+            positions.append(QVector3D(distributions[0][i], distributions[1][i], distributions[2][i]))
+
+        return positions
+
     def keep_one_cluster_active(self, image_cluster):
         """Deactivates other clusters and repositions the images from the given one"""
         predicted_values = DIContainer.image_searcher.predicted_values
         classes_counts = MiscFunctions.get_classes_counts()
-        print(classes_counts)
         cluster_positions = self.calculate_all_positions(int(classes_counts[image_cluster]))
         position_index = -1
         print("Keeping cluster " + str(image_cluster) + " active")
@@ -77,3 +97,26 @@ class SceneManager:
                 position_index += 1
                 DIContainer.scene.objects[i].setEnabled(True)
                 DIContainer.scene.objects[i].transform.setTranslation(cluster_positions[position_index])
+
+    def group_clusters(self):
+        """Repositions all images to highlight the clusters"""
+        number_of_clusters = DIContainer.image_searcher.k
+        classes_counts = MiscFunctions.get_classes_counts()
+        predicted_values = DIContainer.image_searcher.predicted_values
+        objects = DIContainer.scene.objects
+
+        # Generating positions matrix that holds all positions for every cluster
+        positions_matrix = []
+        for i in range(0, number_of_clusters):
+            means = [i * 10, i * 10, i * 10]
+            positions_matrix.append(self.generate_cluster_positions(means, classes_counts[i]))
+
+        # Grouping the images
+        positions_counter_matrix = np.zeros(number_of_clusters, dtype='int')
+        for i in range(0, len(objects)):
+            image_class = predicted_values[i]
+            position_index = positions_counter_matrix[image_class]
+            objects[i].transform.setTranslation(positions_matrix[image_class][position_index])
+            positions_counter_matrix[image_class] += 1
+
+        pass

@@ -101,10 +101,10 @@ class ImageSearcher:
                 scores.append(inertia_score)
 
         kneedle = KneeLocator(k_values, scores, curve="convex", direction="decreasing")
-        plt.figure()
-        plt.title("Optimal K")
-        plt.plot(scores)
-        plt.show()
+        # plt.figure()
+        # plt.title("Optimal K")
+        # plt.plot(scores)
+        # plt.show()
         return kneedle.knee
 
     def get_predicted_values(self, use_histograms):
