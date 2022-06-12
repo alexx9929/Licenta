@@ -12,6 +12,8 @@ from memory_profiler import profile
 import imagesize
 from sklearn.cluster import KMeans
 from ImageSearcher import ImageSearcher
+from threading import Thread
+import time
 
 
 class MainWindow(QMainWindow):
@@ -29,8 +31,13 @@ class MainWindow(QMainWindow):
         # Setup
         self.central_widget.setLayout(self.grid)
         self.setCentralWidget(self.central_widget)
-
         self.setGeometry(QRect(0, 0, 2533, 1336))
+
+        # Multithreading
+        self.clicked_object = None
+        self.double_click_delay = 0.2
+        self.events_thread = Thread(target=self.click_check)
+        self.events_thread.start()
 
         # Top buttons
         self.top_buttons = QWidget(self)
@@ -64,13 +71,20 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
 
+    def click_check(self):
+        while True:
+            if self.clicked_object:
+                time.sleep(self.double_click_delay)
+                self.clicked_object = None
+            else:
+                time.sleep(0)
+
     def search_button_action(self, path: str):
         if not path or path == "":
             return
 
         self.image_searcher.search_image(path)
 
-    @profile
     def load_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return

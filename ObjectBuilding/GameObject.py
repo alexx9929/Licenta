@@ -1,6 +1,7 @@
 from PySide6.Qt3DCore import Qt3DCore
 import DIContainer
 from PySide6.Qt3DRender import Qt3DRender
+import time, threading
 
 
 class GameObject(Qt3DCore.QEntity):
@@ -37,7 +38,11 @@ class GameObject(Qt3DCore.QEntity):
         self.object_picker.clicked.connect(self.object_clicked_callback)
 
     def object_clicked_callback(self, evt: Qt3DRender.QPickEvent):
-        print("Clicked " + self.name)
+        main_window = DIContainer.main_window
+        if main_window.clicked_object == self.name:
+            print("Double clicked on " + self.name)
+        else:
+            main_window.clicked_object = self.name
 
     @staticmethod
     def __DEFAULT_GAMEOBJECT_NAME__():
