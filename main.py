@@ -1,16 +1,23 @@
 import sys, os, gc, DIContainer
+import PySide6
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.Qt3DExtras import Qt3DExtras
+from PySide6.QtCore import QObject, QEvent
+
+import GUI.InputHandler
 from Scene import Scene
 from GUI.MainWindow import MainWindow
 from ResourcesManagement import SceneManager
 from ImageSearcher import ImageSearcher
 
 # Set up the application window
-app = QApplication(sys.argv)
+app = DIContainer.app = QApplication(sys.argv)
+input_handler = DIContainer.input_handler = GUI.InputHandler.InputHandler()
 view = DIContainer.view = Qt3DExtras.Qt3DWindow()
+
 scene_manager = DIContainer.scene_manager = SceneManager.SceneManager()
 container = DIContainer.window_container = QWidget.createWindowContainer(view)
+
 image_searcher = DIContainer.image_searcher = ImageSearcher()
 window = DIContainer.main_window = MainWindow()
 
@@ -20,7 +27,7 @@ scene.initialize()
 view.setRootEntity(scene)
 
 window.show()
-window.load_images_in_scene(window.defaultImageDirectory, 10)
+window.load_images_in_scene(window.defaultImageDirectory, 100)
 
 # execute and cleanup
 app.exec()

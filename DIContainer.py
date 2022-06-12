@@ -6,3 +6,5 @@ default_mesh = None
 scene_manager = None
 image_searcher = None
 camera_controller = None
+app = None
+input_handler = None

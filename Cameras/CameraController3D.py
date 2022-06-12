@@ -1,22 +1,27 @@
 from PySide6.Qt3DExtras import Qt3DExtras
+from PySide6.QtCore import QObject
 import DIContainer
 from ResourcesManagement.SceneManager import SceneManager, Distribution
 from ObjectBuilding.GameObject import GameObject
 from threading import Thread
 import time
-from PySide6.QtGui import QVector3D
+from PySide6.QtGui import QVector3D, QQuaternion
+from PySide6.QtCore import QEvent
 import numpy as np
 import ImageSearcher
 
 
-class CameraController3D(Qt3DExtras.QOrbitCameraController):
+class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
     def __init__(self):
         super().__init__(DIContainer.scene)
         self.scene_manager = DIContainer.scene_manager
-
         self.camera_holder = DIContainer.scene.cameraHolder
-        self.setLinearSpeed(30)
-        self.setLookSpeed(20)
+
+        self.default_linear_speed = 30
+        self.default_look_speed = 30
+
+        self.setLinearSpeed(self.default_linear_speed)
+        self.setLookSpeed(self.default_look_speed)
         self.setCamera(DIContainer.scene.cameraHolder.camera)
 
         # Target
@@ -25,7 +30,9 @@ class CameraController3D(Qt3DExtras.QOrbitCameraController):
         self.direction = None
         self.target = None
         self.target_position = None
+        self.delta_rotation = None
         self.interpolation_factor = 0
+        self.released_control = False
 
         # Parallel camera control
         self.control_callback = None
@@ -64,21 +71,28 @@ class CameraController3D(Qt3DExtras.QOrbitCameraController):
                 time.sleep(0)
 
     def focus_on_object(self):
-        if self.interpolation_factor < 1:
+        if self.interpolation_factor <= 1:
             delta = self.initial_distance * self.interpolation_factor * self.direction
             new_position = QVector3D(self.initial_position.x() + delta[0], self.initial_position.y() + delta[1],
                                      self.initial_position.z() + delta[2])
-            self.interpolation_factor += 0.001
+            self.interpolation_factor += 0.005
             self.camera_holder.set_position_vector(new_position)
-            print(self.camera_holder.camera.viewCenter())
+
+            self.released_control = False
+            DIContainer.main_window.repaint()
+            print("Repaint")
         else:
-            self.control_callback = None
-            self.target = None
-            self.initial_position = None
-            self.interpolation_factor = 0
-            DIContainer.main_window.clicked_object = None
+            if not self.released_control:
+                DIContainer.input_handler.unblock_mouse_input()
+                print("Control released")
+                self.control_callback = None
+                self.initial_position = None
+                self.interpolation_factor = 0
+                DIContainer.main_window.clicked_object = None
+                self.released_control = True
 
     def start_object_focus(self, obj: GameObject):
+        DIContainer.input_handler.block_mouse_input()
         self.target = obj
         self.target_position = obj.transform.translation()
         self.target_position.setZ(self.target_position.z() + 2)
@@ -94,4 +108,13 @@ class CameraController3D(Qt3DExtras.QOrbitCameraController):
         p2 = [self.target_position.x(), self.target_position.y(), self.target_position.z()]
         self.initial_distance = ImageSearcher.ImageSearcher.euclidian_distance(p1, p2)
 
+        # Rotates to 0 degrees on x-axis
+        new_rotation = QQuaternion.fromEulerAngles(0, 0, 0)
+        old_rotation = self.camera_holder.camera.transform().rotation().toEulerAngles()
+        delta_rotation = QVector3D(0, 0, 0) - old_rotation
+        delta_rotation_quaternion = QQuaternion.fromEulerAngles(delta_rotation.x(), delta_rotation.y(),
+                                                                delta_rotation.z())
+        self.camera_holder.camera.rotate(delta_rotation_quaternion)
+
+        # Starts movement
         self.control_callback = self.focus_on_object
