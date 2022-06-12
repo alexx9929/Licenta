@@ -25,6 +25,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.setCamera(DIContainer.scene.cameraHolder.camera)
 
         # Target
+        self.minimum_distance = 1
         self.initial_position = None
         self.initial_distance = None
         self.direction = None
@@ -92,24 +93,26 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
                 self.released_control = True
 
     def start_object_focus(self, obj: GameObject):
-        DIContainer.input_handler.block_mouse_input()
-        self.target = obj
         self.target_position = obj.transform.translation()
         self.target_position.setZ(self.target_position.z() + 2)
         self.initial_position = self.camera_holder.get_position()
-
-        # Calculating direction and normalizing it
-        direction = self.target_position - self.camera_holder.get_position()
-        direction_list = [direction.x(), direction.y(), direction.z()]
-        self.direction = direction_list / np.linalg.norm(direction_list)
 
         # Calculating distance from the original position
         p1 = [self.initial_position.x(), self.initial_position.y(), self.initial_position.z()]
         p2 = [self.target_position.x(), self.target_position.y(), self.target_position.z()]
         self.initial_distance = ImageSearcher.ImageSearcher.euclidian_distance(p1, p2)
 
+        if self.initial_distance < self.minimum_distance:
+            self.target_position = None
+            self.initial_position = None
+            return
+
+        # Calculating direction and normalizing it
+        direction = self.target_position - self.camera_holder.get_position()
+        direction_list = [direction.x(), direction.y(), direction.z()]
+        self.direction = direction_list / np.linalg.norm(direction_list)
+
         # Rotates to 0 degrees on x-axis
-        new_rotation = QQuaternion.fromEulerAngles(0, 0, 0)
         old_rotation = self.camera_holder.camera.transform().rotation().toEulerAngles()
         delta_rotation = QVector3D(0, 0, 0) - old_rotation
         delta_rotation_quaternion = QQuaternion.fromEulerAngles(delta_rotation.x(), delta_rotation.y(),
@@ -117,4 +120,6 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.camera_holder.camera.rotate(delta_rotation_quaternion)
 
         # Starts movement
+        self.target = obj
+        DIContainer.input_handler.block_mouse_input()
         self.control_callback = self.focus_on_object
