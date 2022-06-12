@@ -20,7 +20,7 @@ scene.initialize()
 view.setRootEntity(scene)
 
 window.show()
-window.load_images_in_scene(window.defaultImageDirectory, 100)
+window.load_images_in_scene(window.defaultImageDirectory, 10)
 
 # execute and cleanup
 app.exec()

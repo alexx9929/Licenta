@@ -1,5 +1,6 @@
 from PySide6.Qt3DCore import Qt3DCore
 import DIContainer
+from PySide6.Qt3DRender import Qt3DRender
 
 
 class GameObject(Qt3DCore.QEntity):
@@ -18,6 +19,9 @@ class GameObject(Qt3DCore.QEntity):
 
         # Visual layer
         self.material = None
+
+        # Object picker
+        self.object_picker = None
         pass
 
     def add_mesh(self, mesh):
@@ -26,6 +30,14 @@ class GameObject(Qt3DCore.QEntity):
     def add_material(self, material):
         self.material = material
         self.addComponent(self.material)
+
+    def add_object_picker(self):
+        self.object_picker = Qt3DRender.QObjectPicker()
+        self.addComponent(self.object_picker)
+        self.object_picker.clicked.connect(self.object_clicked_callback)
+
+    def object_clicked_callback(self, evt: Qt3DRender.QPickEvent):
+        print("Clicked " + self.name)
 
     @staticmethod
     def __DEFAULT_GAMEOBJECT_NAME__():

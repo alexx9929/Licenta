@@ -105,12 +105,14 @@ class SceneManager:
         predicted_values = DIContainer.image_searcher.predicted_values
         objects = DIContainer.scene.objects
 
-        print(classes_counts)
         # Generating positions matrix that holds all positions for every cluster
         positions_matrix = []
         last_x_deviation = 0
         last_x_mean = 0
         x_offset = 2
+
+        # TODO: think of the clusters as cubes (they have same deviation on all axes which means equal sizes)
+        #  and group them as you were grouping the planes
 
         for i in range(0, number_of_clusters):
             number_of_images_in_cluster = classes_counts[i]
