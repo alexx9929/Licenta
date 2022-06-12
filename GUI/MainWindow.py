@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
 
         # Multithreading
         self.clicked_object = None
-        self.double_click_delay = 0.2
+        self.double_click_delay = 0.4
         self.events_thread = Thread(target=self.click_check)
         self.events_thread.start()
 

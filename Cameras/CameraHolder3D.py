@@ -11,3 +11,12 @@ class CameraHolder3D:
 
     def set_position(self, x: float, y: float, z: float):
         self.camera.setPosition(QVector3D(x, y, z))
+        #self.camera.setViewCenter(QVector3D(0, 0, 0))
+
+    def set_position_vector(self, position: QVector3D):
+        self.camera.setPosition(position)
+
+    def get_position(self):
+        pos = self.camera.position()
+        new_pos = QVector3D(pos.x(), pos.y(), pos.z())
+        return new_pos

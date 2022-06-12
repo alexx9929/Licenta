@@ -40,9 +40,12 @@ class GameObject(Qt3DCore.QEntity):
     def object_clicked_callback(self, evt: Qt3DRender.QPickEvent):
         main_window = DIContainer.main_window
         if main_window.clicked_object == self.name:
-            print("Double clicked on " + self.name)
+            self.on_double_click()
         else:
             main_window.clicked_object = self.name
+
+    def on_double_click(self):
+        DIContainer.camera_controller.start_object_focus(self)
 
     @staticmethod
     def __DEFAULT_GAMEOBJECT_NAME__():
