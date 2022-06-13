@@ -6,12 +6,30 @@ from PySide6.QtCore import QRect, QSize, Qt
 from memory_profiler import profile
 import numpy as np
 import imagesize
+from ObjectBuilding.ObjectBuilder import ObjectBuilder
+import DIContainer
 
 
 class ResourcesManager:
 
     def __init__(self):
         pass
+
+    @staticmethod
+    def load_image_in_scene(directory: str, file: str, position: QVector3D, texture_size: int):
+        path = file
+        ratio = 1
+
+        if DIContainer.scene_manager.keep_aspect_ratios:
+            full_path = os.path.join(directory, file)
+            width, height = imagesize.get(full_path)
+            ratio = width / height
+
+        position = position
+        rotation = QQuaternion.fromEulerAngles(90, 0, 0)
+        scale = QVector3D(ratio, 1, 1)
+
+        ObjectBuilder.create_textured_plane(position, rotation, scale, texture_size, image_path=path)
 
     @staticmethod
     def load_image(path: str, image_size=0):

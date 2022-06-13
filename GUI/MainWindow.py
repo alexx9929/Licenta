@@ -26,8 +26,7 @@ class MainWindow(QMainWindow):
         self.scene_manager = DIContainer.scene_manager
         self.image_searcher = DIContainer.image_searcher
 
-        # Variables
-        self.textureSize = 255
+        self.texture_size = 255
 
         # Setup
         self.central_widget.setLayout(self.grid)
@@ -59,8 +58,9 @@ class MainWindow(QMainWindow):
         # Buttons actions
         self.defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
         self.loadImagesButton.clicked.connect(
-            lambda x: self.load_images_in_scene(QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
-                                                self.scene_manager.image_count))
+            lambda x: self.start_loading_images_in_scene(
+                QFileDialog.getExistingDirectory(dir=self.defaultImageDirectory),
+                self.scene_manager.image_count))
 
         self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
         self.imageCountLineEdit.textChanged.connect(
@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
 
         self.image_searcher.search_image(path)
 
-    def load_images_in_scene(self, directory: str, count: int):
+    def start_loading_images_in_scene(self, directory: str, count: int):
         if not directory or directory == "":
             return
 
@@ -101,22 +101,10 @@ class MainWindow(QMainWindow):
         positions = self.scene_manager.calculate_all_positions(count)
 
         for i in range(0, count):
-            path = files[i]
-            ratio = 1
-
-            if self.scene_manager.keep_aspect_ratios:
-                full_path = os.path.join(directory, files[i])
-                width, height = imagesize.get(full_path)
-                ratio = width / height
-
-            position = positions[i]
-            rotation = QQuaternion.fromEulerAngles(90, 0, 0)
-            scale = QVector3D(ratio, 1, 1)
-
-            ObjectBuilder.create_textured_plane(position, rotation, scale, self.textureSize, image_path=path)
+            ResourcesManager.load_image_in_scene(directory, files[i], positions[i], self.texture_size)
 
         # self.image_searcher.start_classification(True)
         # self.scene_manager.group_clusters()
 
         # Centering camera
-        DIContainer.scene.cameraController.center_camera()
+        # DIContainer.scene.cameraController.center_camera()
