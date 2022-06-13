@@ -11,12 +11,15 @@ import imagesize
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
 import DIContainer
 import threading, queue
+from ObjectBuilding.SerializedGameObject import SerializedGameObject
+import cv2
+from Utilities import ImagesUtilities
 
 
 class ResourcesManager:
 
     def __init__(self):
-        self.number_of_threads = 4
+        self.number_of_threads = 8
         self.threads = []
         self.thread_actions = []
         self.create_threads()
@@ -57,21 +60,22 @@ class ResourcesManager:
                 end += count % self.number_of_threads
 
             self.thread_start_loading_images(lambda x=start, y=end: self.load_batch_of_images(x, y), i)
-            #print("Start: " + str(start) + " End: " + str(end))
+            # print("Start: " + str(start) + " End: " + str(end))
 
-        # while len(DIContainer.scene.objects) != count:
-        #     print(self.queue.qsize())
-        #     obj = self.queue.get()
-        #     DIContainer.scene.objects.append(obj)
-        #     obj.material.texture_image.setSize(QSize(1, 1))
+        while len(DIContainer.scene.objects) != count:
+            serialized_object = self.queue.get()
+            obj = serialized_object.create_object()
+            DIContainer.scene.objects.append(obj)
+            obj.material.texture_image.setSize(QSize(self.texture_size, self.texture_size))
 
     def thread_start_loading_images(self, action, thread_index):
         """Overrides action at index for the thread with same index to start the action"""
         self.thread_actions[thread_index] = action
 
     def load_batch_of_images(self, start_index: int, end_index: int):
+        """Function used by worker threads to read images and generate info"""
         for i in range(start_index, end_index + 1):
-            self.load_image_in_scene(self.directory, self.files[i], self.positions[i], self.texture_size)
+            self.generate_object_info(self.directory, self.files[i], self.positions[i], self.texture_size)
 
         self.stop_thread()
 
@@ -82,20 +86,42 @@ class ResourcesManager:
                 print("Thread " + str(threading.get_ident()) + " finished loading")
                 DIContainer.main_window.repaint()
 
-    def load_image_in_scene(self, directory: str, file: str, position: QVector3D, texture_size: int):
-        path = file
+    def generate_object_info(self, directory: str, file: str, position: QVector3D, texture_size: int):
+        """Calculates the necessary data to create an object and puts it in the queue
+        so that the main thread can create it"""
         ratio = 1
+        full_path = os.path.join(directory, file)
 
         if DIContainer.scene_manager.keep_aspect_ratios:
-            full_path = os.path.join(directory, file)
             width, height = imagesize.get(full_path)
             ratio = width / height
 
-        position = position
-        rotation = QQuaternion.fromEulerAngles(90, 0, 0)
-        scale = QVector3D(ratio, 1, 1)
-        obj = ObjectBuilder.create_textured_plane(position, rotation, scale, texture_size, image_path=path)
-        self.queue.put(obj)
+        # Creating serialized object and transform parameters
+        serialized_object = SerializedGameObject()
+        serialized_object.filename = file
+        serialized_object.position = position
+        serialized_object.rotation = QQuaternion.fromEulerAngles(90, 0, 0)
+        serialized_object.scale = QVector3D(ratio, 1, 1)
+
+        # Creating image parameters
+        serialized_object.texture_size = self.texture_size
+        self.calculate_image(full_path, serialized_object)
+        self.queue.put(serialized_object)
+
+    def calculate_image(self, path, obj):
+        """Reads an image and calculates the histogram in order to create the object"""
+        # Loading image with cv2
+        cv_img = cv2.imread(path)
+        height, width, channel = cv_img.shape
+        bytes_per_line = 3 * width
+
+        # Creating a QImage from the cv2 image
+        image = QImage(cv_img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped().scaled(
+            QSize(self.texture_size, self.texture_size), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        #channels_means = cv2.mean(cv_img)[:3]
+        histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 256)
+        obj.image = image
+        obj.histogram = histogram
 
     @staticmethod
     def load_image(path: str, image_size=0):

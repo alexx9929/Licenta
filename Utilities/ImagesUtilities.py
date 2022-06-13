@@ -1,7 +1,29 @@
 import cv2
 import numpy as np
-
 from Utilities import MiscFunctions
+
+
+def image_histogram(img, color_space, bins):
+    if color_space == 'HSV':
+        code = cv2.COLOR_BGR2HSV
+        max_val = [360, 1, 256]
+    else:
+        if color_space == 'RGB':
+            code = cv2.COLOR_BGR2RGB
+            max_val = [256, 256, 256]
+        else:
+            print('Invalid colorspace')
+            return
+
+    img = cv2.cvtColor(img, code=code)
+    concat_hist = []
+
+    for i in range(3):
+        channel = img[:, :, i]
+        hist = cv2.calcHist([channel], [0], None, [bins], [0, max_val[i]])
+        concat_hist.append(hist)
+
+    return np.array(concat_hist).flatten()
 
 
 def get_image_histograms(image):
