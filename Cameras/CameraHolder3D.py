@@ -21,12 +21,15 @@ class CameraHolder3D:
         self.camera.translateWorld(delta,
                                    option=PySide6.Qt3DRender.Qt3DRender.QCamera.CameraTranslationOption.TranslateViewCenter)
 
-
     def get_position(self):
         pos = self.camera.position()
         new_pos = QVector3D(pos.x(), pos.y(), pos.z())
         return new_pos
 
+    def get_rotation(self):
+        return self.camera.transform().rotation().toEulerAngles()
+
     def print_position(self):
-        print("Position: " + str(self.camera.position().x())[:5] + ", " + str(self.camera.position().y()) [:5]+ ", " + str(
+        print("Position: " + str(self.camera.position().x())[:5] + ", " + str(self.camera.position().y())[
+                                                                          :5] + ", " + str(
             self.camera.position().z())[:5])

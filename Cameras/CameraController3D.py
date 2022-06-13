@@ -16,8 +16,8 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.scene_manager = DIContainer.scene_manager
         self.camera_holder = DIContainer.scene.cameraHolder
 
-        self.default_linear_speed = 30
-        self.default_look_speed = 30
+        self.default_linear_speed = 50
+        self.default_look_speed = 100
 
         self.setLinearSpeed(self.default_linear_speed)
         self.setLookSpeed(self.default_look_speed)
@@ -86,7 +86,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
 
             self.released_control = False
             DIContainer.main_window.repaint()
-            print("Repaint")
+            print(self.camera_holder.get_rotation())
         else:
             if not self.released_control:
                 DIContainer.input_handler.unblock_mouse_input()
@@ -100,10 +100,9 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
     def start_object_focus(self, obj: GameObject):
         """Calculates the necessary parameters for a smooth transition to the target and starts
         the control thread that will move the camera"""
-        self.target_position = obj.transform.translation()
-        self.target_position.setZ(self.target_position.z() + 2)
         self.initial_position = self.camera_holder.get_position()
 
+        self.calculate_target_position(obj)
         self.calculate_initial_distance()
 
         if self.initial_distance < self.minimum_distance:
@@ -118,6 +117,13 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.target = obj
         DIContainer.input_handler.block_mouse_input()
         self.control_callback = self.focus_on_object
+
+    def calculate_target_position(self, obj):
+        """Calculates target position based on the position of the object"""
+        z_offset = 2
+
+        self.target_position = obj.transform.translation()
+        self.target_position.setZ(self.target_position.z() + z_offset)
 
     def calculate_initial_distance(self):
         """Calculates the initial distance between the position of the camera and the target position"""
@@ -134,9 +140,11 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
     def calculate_rotation_steps(self):
         """Divides the delta rotation into steps. Each iteration will rotate the
         camera by the same amount until the target rotation is reached"""
+        target_rotation = QVector3D(0, 0, 0)
         number_of_steps = 1 / self.interpolation_step
-        old_rotation = self.camera_holder.camera.transform().rotation().toEulerAngles()
-        delta_rotation = QVector3D(0, 0, 0) - old_rotation
+        old_rotation = self.camera_holder.get_rotation()
+        delta_rotation = target_rotation - old_rotation
+
         self.rotation_steps = QQuaternion.fromEulerAngles(delta_rotation.x() / number_of_steps,
                                                           delta_rotation.y() / number_of_steps,
                                                           delta_rotation.z() / number_of_steps)
