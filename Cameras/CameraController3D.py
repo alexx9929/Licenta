@@ -6,7 +6,6 @@ from ObjectBuilding.GameObject import GameObject
 from threading import Thread
 import time
 from PySide6.QtGui import QVector3D, QQuaternion
-from PySide6.QtCore import QEvent
 import numpy as np
 import ImageSearcher
 
@@ -24,7 +23,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.setLookSpeed(self.default_look_speed)
         self.setCamera(DIContainer.scene.cameraHolder.camera)
 
-        # Target
+        # Focus parameters
         self.minimum_distance = 1
         self.initial_position = None
         self.initial_distance = None
@@ -33,7 +32,9 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.target_position = None
         self.delta_rotation = None
         self.interpolation_factor = 0
+        self.interpolation_step = 0.005
         self.released_control = False
+        self.rotation_steps = None
 
         # Parallel camera control
         self.control_callback = None
@@ -72,14 +73,13 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
                 time.sleep(0)
 
     def focus_on_object(self):
-        # TODO: replace while with a for loop to have a determined number of steps
-        #  for rotation
         if self.interpolation_factor <= 1:
             delta = self.initial_distance * self.interpolation_factor * self.direction
             new_position = QVector3D(self.initial_position.x() + delta[0], self.initial_position.y() + delta[1],
                                      self.initial_position.z() + delta[2])
-            self.interpolation_factor += 0.005
+            self.interpolation_factor += self.interpolation_step
             self.camera_holder.set_position_vector(new_position)
+            self.camera_holder.camera.rotate(self.rotation_steps)
 
             self.released_control = False
             DIContainer.main_window.repaint()
@@ -114,14 +114,18 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         direction_list = [direction.x(), direction.y(), direction.z()]
         self.direction = direction_list / np.linalg.norm(direction_list)
 
-        # Rotates to 0 degrees on x-axis
+        # Divides the delta rotation into steps
+        # Each iteration will rotate the camera by the same amount
+        # Until the target rotation is reached
+        number_of_steps = 1 / self.interpolation_step
         old_rotation = self.camera_holder.camera.transform().rotation().toEulerAngles()
         delta_rotation = QVector3D(0, 0, 0) - old_rotation
-        delta_rotation_quaternion = QQuaternion.fromEulerAngles(delta_rotation.x(), delta_rotation.y(),
-                                                                delta_rotation.z())
-        self.camera_holder.camera.rotate(delta_rotation_quaternion)
+        self.rotation_steps = QQuaternion.fromEulerAngles(delta_rotation.x() / number_of_steps,
+                                                          delta_rotation.y() / number_of_steps,
+                                                          delta_rotation.z() / number_of_steps)
 
         # Starts movement
         self.target = obj
         DIContainer.input_handler.block_mouse_input()
         self.control_callback = self.focus_on_object
+
