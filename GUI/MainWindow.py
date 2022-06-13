@@ -73,6 +73,7 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.top_buttons)
         self.grid.addWidget(DIContainer.window_container)
 
+    # TODO: move to check to app's event filter to remove the need for a new thread
     def click_check(self):
         while True:
             if self.clicked_object:
