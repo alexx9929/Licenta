@@ -66,6 +66,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
             DIContainer.scene.cameraHolder.set_position(0, 0, z_pos)
 
     def control_camera(self):
+        """This function runs in a separate thread and controls the camera if there is a method for it"""
         while True:
             if self.control_callback:
                 self.control_callback()
@@ -73,6 +74,8 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
                 time.sleep(0)
 
     def focus_on_object(self):
+        """This function moves and rotates the camera smoothly until it reaches its target
+         while keeping the input inactive"""
         if self.interpolation_factor <= 1:
             delta = self.initial_distance * self.interpolation_factor * self.direction
             new_position = QVector3D(self.initial_position.x() + delta[0], self.initial_position.y() + delta[1],
@@ -95,37 +98,45 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
                 self.released_control = True
 
     def start_object_focus(self, obj: GameObject):
+        """Calculates the necessary parameters for a smooth transition to the target and starts
+        the control thread that will move the camera"""
         self.target_position = obj.transform.translation()
         self.target_position.setZ(self.target_position.z() + 2)
         self.initial_position = self.camera_holder.get_position()
 
-        # Calculating distance from the original position
-        p1 = [self.initial_position.x(), self.initial_position.y(), self.initial_position.z()]
-        p2 = [self.target_position.x(), self.target_position.y(), self.target_position.z()]
-        self.initial_distance = ImageSearcher.ImageSearcher.euclidian_distance(p1, p2)
+        self.calculate_initial_distance()
 
         if self.initial_distance < self.minimum_distance:
             self.target_position = None
             self.initial_position = None
             return
 
-        # Calculating direction and normalizing it
-        direction = self.target_position - self.camera_holder.get_position()
-        direction_list = [direction.x(), direction.y(), direction.z()]
-        self.direction = direction_list / np.linalg.norm(direction_list)
-
-        # Divides the delta rotation into steps
-        # Each iteration will rotate the camera by the same amount
-        # Until the target rotation is reached
-        number_of_steps = 1 / self.interpolation_step
-        old_rotation = self.camera_holder.camera.transform().rotation().toEulerAngles()
-        delta_rotation = QVector3D(0, 0, 0) - old_rotation
-        self.rotation_steps = QQuaternion.fromEulerAngles(delta_rotation.x() / number_of_steps,
-                                                          delta_rotation.y() / number_of_steps,
-                                                          delta_rotation.z() / number_of_steps)
+        self.calculate_direction()
+        self.calculate_rotation_steps()
 
         # Starts movement
         self.target = obj
         DIContainer.input_handler.block_mouse_input()
         self.control_callback = self.focus_on_object
 
+    def calculate_initial_distance(self):
+        """Calculates the initial distance between the position of the camera and the target position"""
+        p1 = [self.initial_position.x(), self.initial_position.y(), self.initial_position.z()]
+        p2 = [self.target_position.x(), self.target_position.y(), self.target_position.z()]
+        self.initial_distance = ImageSearcher.ImageSearcher.euclidian_distance(p1, p2)
+
+    def calculate_direction(self):
+        """Calculates the direction between initial and target position and normalizes it"""
+        direction = self.target_position - self.camera_holder.get_position()
+        direction_list = [direction.x(), direction.y(), direction.z()]
+        self.direction = direction_list / np.linalg.norm(direction_list)
+
+    def calculate_rotation_steps(self):
+        """Divides the delta rotation into steps. Each iteration will rotate the
+        camera by the same amount until the target rotation is reached"""
+        number_of_steps = 1 / self.interpolation_step
+        old_rotation = self.camera_holder.camera.transform().rotation().toEulerAngles()
+        delta_rotation = QVector3D(0, 0, 0) - old_rotation
+        self.rotation_steps = QQuaternion.fromEulerAngles(delta_rotation.x() / number_of_steps,
+                                                          delta_rotation.y() / number_of_steps,
+                                                          delta_rotation.z() / number_of_steps)
