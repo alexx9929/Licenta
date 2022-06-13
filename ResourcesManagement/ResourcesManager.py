@@ -13,15 +13,34 @@ import DIContainer
 class ResourcesManager:
 
     def __init__(self):
+        self.number_of_threads = 4
         pass
 
+    def load_images_in_scene(self, count: int, dir: str, files: list, positions: list, texture_size: int):
+        images_per_thread = int(count / self.number_of_threads)
+
+        for i in range(0, self.number_of_threads):
+            start = i * images_per_thread
+            end = (i + 1) * images_per_thread - 1
+
+            if count % self.number_of_threads != 0 and i == self.number_of_threads - 1:
+                end += count % self.number_of_threads
+
+            self.load_batch_of_images(start, end, dir, files, positions, texture_size)
+            print("Start: " + str(start) + " End: " + str(end))
+
+    def load_batch_of_images(self, start_index: int, end_index: int, dir: str, files: list, positions: list,
+                             texture_size: int):
+        for i in range(start_index, end_index):
+            self.load_image_in_scene(dir, files[i], positions[i], texture_size)
+
     @staticmethod
-    def load_image_in_scene(directory: str, file: str, position: QVector3D, texture_size: int):
+    def load_image_in_scene(dir: str, file: str, position: QVector3D, texture_size: int):
         path = file
         ratio = 1
 
         if DIContainer.scene_manager.keep_aspect_ratios:
-            full_path = os.path.join(directory, file)
+            full_path = os.path.join(dir, file)
             width, height = imagesize.get(full_path)
             ratio = width / height
 

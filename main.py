@@ -7,18 +7,18 @@ from PySide6.QtCore import QObject, QEvent
 import GUI.InputHandler
 from Scene import Scene
 from GUI.MainWindow import MainWindow
-from ResourcesManagement import SceneManager
+from ResourcesManagement import SceneManager, ResourcesManager
 from ImageSearcher import ImageSearcher
 
 # Set up the application window
 app = DIContainer.app = QApplication(sys.argv)
-input_handler = DIContainer.input_handler = GUI.InputHandler.InputHandler()
+DIContainer.input_handler = GUI.InputHandler.InputHandler()
 view = DIContainer.view = Qt3DExtras.Qt3DWindow()
 
-scene_manager = DIContainer.scene_manager = SceneManager.SceneManager()
-container = DIContainer.window_container = QWidget.createWindowContainer(view)
-
-image_searcher = DIContainer.image_searcher = ImageSearcher()
+DIContainer.resources_manager = ResourcesManager.ResourcesManager()
+DIContainer.scene_manager = SceneManager.SceneManager()
+DIContainer.window_container = QWidget.createWindowContainer(view)
+DIContainer.image_searcher = ImageSearcher()
 window = DIContainer.main_window = MainWindow()
 
 scene = DIContainer.scene = Scene()
