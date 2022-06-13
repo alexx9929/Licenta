@@ -19,7 +19,7 @@ from Utilities import ImagesUtilities
 class ResourcesManager:
 
     def __init__(self):
-        self.number_of_threads = 8
+        self.number_of_threads = 20
         self.threads = []
         self.thread_actions = []
         self.create_threads()
@@ -50,6 +50,7 @@ class ResourcesManager:
         self.positions = positions
         self.texture_size = texture_size
 
+        t1 = time.perf_counter()
         images_per_thread = int(count / self.number_of_threads)
 
         for i in range(0, self.number_of_threads):
@@ -60,13 +61,15 @@ class ResourcesManager:
                 end += count % self.number_of_threads
 
             self.thread_start_loading_images(lambda x=start, y=end: self.load_batch_of_images(x, y), i)
-            # print("Start: " + str(start) + " End: " + str(end))
 
         while len(DIContainer.scene.objects) != count:
             serialized_object = self.queue.get()
             obj = serialized_object.create_object()
             DIContainer.scene.objects.append(obj)
             obj.material.texture_image.setSize(QSize(self.texture_size, self.texture_size))
+            DIContainer.main_window.repaint()
+        t2 = time.perf_counter()
+        print("Loading time: " + str(t2 - t1) + " using " + str(self.number_of_threads) + " threads")
 
     def thread_start_loading_images(self, action, thread_index):
         """Overrides action at index for the thread with same index to start the action"""
@@ -118,7 +121,7 @@ class ResourcesManager:
         # Creating a QImage from the cv2 image
         image = QImage(cv_img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped().scaled(
             QSize(self.texture_size, self.texture_size), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        #channels_means = cv2.mean(cv_img)[:3]
+        # channels_means = cv2.mean(cv_img)[:3]
         histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 256)
         obj.image = image
         obj.histogram = histogram
