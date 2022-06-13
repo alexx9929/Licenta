@@ -86,7 +86,8 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
 
             self.released_control = False
             DIContainer.main_window.repaint()
-            print(self.camera_holder.get_rotation())
+
+            self.camera_holder.print_rotation()
         else:
             if not self.released_control:
                 DIContainer.input_handler.unblock_mouse_input()

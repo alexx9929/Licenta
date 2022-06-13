@@ -33,3 +33,7 @@ class CameraHolder3D:
         print("Position: " + str(self.camera.position().x())[:5] + ", " + str(self.camera.position().y())[
                                                                           :5] + ", " + str(
             self.camera.position().z())[:5])
+
+    def print_rotation(self):
+        rotation = self.get_rotation()
+        print("Rotation: " + str(rotation.x())[:5] + ", " + str(rotation.y())[:5] + ", " + str(rotation.z())[:5])
