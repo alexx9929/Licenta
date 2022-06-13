@@ -7,7 +7,7 @@ class CameraHolder3D:
     def __init__(self):
         self.camera = DIContainer.view.camera()
         self.camera.lens().setPerspectiveProjection(45, 16 / 9, 0.1, 1000)
-        self.camera.setPosition(QVector3D(0, 0, 40))
+        self.camera.setPosition(QVector3D(0, 0, 20))
         self.camera.setViewCenter(QVector3D(0, 0, 0))
         pass
 

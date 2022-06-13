@@ -7,6 +7,7 @@ from ResourcesManagement.ResourcesManager import ResourcesManager
 from threading import Thread
 import time
 from time import perf_counter
+import queue
 
 
 class MainWindow(QMainWindow):
@@ -92,6 +93,7 @@ class MainWindow(QMainWindow):
 
         self.scene_manager.image_count = count
         positions = self.scene_manager.calculate_all_positions(count)
+
         self.resources_manager.load_images_in_scene(count, directory, files, positions, self.texture_size)
 
         # self.image_searcher.start_classification(True)

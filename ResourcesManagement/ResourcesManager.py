@@ -10,7 +10,7 @@ import numpy as np
 import imagesize
 from ObjectBuilding.ObjectBuilder import ObjectBuilder
 import DIContainer
-import threading
+import threading, queue
 
 
 class ResourcesManager:
@@ -20,6 +20,7 @@ class ResourcesManager:
         self.threads = []
         self.thread_actions = []
         self.create_threads()
+        self.queue = queue.Queue()
 
         self.directory = None
         self.files = None
@@ -58,6 +59,12 @@ class ResourcesManager:
             self.thread_start_loading_images(lambda x=start, y=end: self.load_batch_of_images(x, y), i)
             #print("Start: " + str(start) + " End: " + str(end))
 
+        # while len(DIContainer.scene.objects) != count:
+        #     print(self.queue.qsize())
+        #     obj = self.queue.get()
+        #     DIContainer.scene.objects.append(obj)
+        #     obj.material.texture_image.setSize(QSize(1, 1))
+
     def thread_start_loading_images(self, action, thread_index):
         """Overrides action at index for the thread with same index to start the action"""
         self.thread_actions[thread_index] = action
@@ -73,9 +80,9 @@ class ResourcesManager:
             if threading.current_thread() == self.threads[i]:
                 self.thread_actions[i] = None
                 print("Thread " + str(threading.get_ident()) + " finished loading")
+                DIContainer.main_window.repaint()
 
-    @staticmethod
-    def load_image_in_scene(directory: str, file: str, position: QVector3D, texture_size: int):
+    def load_image_in_scene(self, directory: str, file: str, position: QVector3D, texture_size: int):
         path = file
         ratio = 1
 
@@ -87,8 +94,8 @@ class ResourcesManager:
         position = position
         rotation = QQuaternion.fromEulerAngles(90, 0, 0)
         scale = QVector3D(ratio, 1, 1)
-
-        ObjectBuilder.create_textured_plane(position, rotation, scale, texture_size, image_path=path)
+        obj = ObjectBuilder.create_textured_plane(position, rotation, scale, texture_size, image_path=path)
+        self.queue.put(obj)
 
     @staticmethod
     def load_image(path: str, image_size=0):

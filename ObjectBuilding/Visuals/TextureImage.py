@@ -26,6 +26,7 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         pass
 
     def paint(self, painter: QPainter):
+        print("PAINT")
         path = self.get_full_path()
 
         # Loading image with cv2
