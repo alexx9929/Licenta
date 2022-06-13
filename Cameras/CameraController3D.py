@@ -72,6 +72,8 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
                 time.sleep(0)
 
     def focus_on_object(self):
+        # TODO: replace while with a for loop to have a determined number of steps
+        #  for rotation
         if self.interpolation_factor <= 1:
             delta = self.initial_distance * self.interpolation_factor * self.direction
             new_position = QVector3D(self.initial_position.x() + delta[0], self.initial_position.y() + delta[1],
