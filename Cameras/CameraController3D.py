@@ -91,7 +91,6 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         else:
             if not self.released_control:
                 DIContainer.input_handler.unblock_mouse_input()
-                print("Control released")
                 self.control_callback = None
                 self.initial_position = None
                 self.interpolation_factor = 0

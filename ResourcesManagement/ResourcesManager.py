@@ -56,6 +56,7 @@ class ResourcesManager:
     # region Multithreaded top-level actions
     def start_classification(self):
         DIContainer.image_searcher.start_classification(True)
+        DIContainer.scene_manager.group_clusters()
         self.stop_thread()
 
     def load_images_in_scene(self, count: int, directory: str, files: list, positions: list, texture_size: int):
@@ -86,6 +87,8 @@ class ResourcesManager:
 
         # Starting parallel classification after finishing loading the images
         self.thread_actions[0] = self.start_classification
+       # self.thread_actions[1] = self.f
+
 
     # endregion
 

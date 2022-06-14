@@ -137,3 +137,11 @@ class SceneManager:
             positions_counter_matrix[image_class] += 1
 
         pass
+
+    def group_cluster(self, objects, predicted_values, cluster_index, positions):
+        position_counter = 0
+        for i in range(0, len(objects)):
+            image_class = predicted_values[i]
+            if image_class == cluster_index:
+                objects[i].transform.setTranslation(positions[position_counter])
+                position_counter += 1
