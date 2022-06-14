@@ -31,6 +31,7 @@ class ResourcesManager:
         self.texture_size = 255
         pass
 
+    # region Default thread methods
     def create_threads(self):
         for i in range(0, self.number_of_threads):
             self.thread_actions.append(None)
@@ -44,6 +45,16 @@ class ResourcesManager:
 
             time.sleep(0)
 
+    def stop_thread(self):
+        for i in range(0, self.number_of_threads):
+            if threading.current_thread() == self.threads[i]:
+                self.thread_actions[i] = None
+                print("Thread " + str(threading.get_ident()) + " finished loading")
+                DIContainer.main_window.repaint()
+
+    # endregion
+
+    # region Multithreaded actions
     def start_classification(self):
         DIContainer.image_searcher.start_classification(True)
         self.stop_thread()
@@ -69,17 +80,33 @@ class ResourcesManager:
             self.thread_start_loading_images(lambda x=start, y=end: self.load_batch_of_images(x, y), i)
 
         # Creating objects from the loaded data
-        while len(DIContainer.scene.objects) != count:
-            serialized_object = self.queue.get()
-            obj = serialized_object.create_object()
-            DIContainer.scene.objects.append(obj)
-            obj.material.texture_image.setSize(QSize(self.texture_size, self.texture_size))
-            DIContainer.main_window.update()
+        self.process_queue(lambda x=count: self.objects_not_loaded(x), self.deserialize_queue_item)
+
         t2 = time.perf_counter()
         print("Loading time: " + str(t2 - t1) + " using " + str(self.number_of_threads) + " threads")
 
         # Starting parallel classification after finishing loading the images
         self.thread_actions[0] = self.start_classification
+
+    # endregion
+
+    # region Queue processing
+    def process_queue(self, condition, process_method):
+        """While condition is true, process_method will be called"""
+        while condition():
+            process_method()
+
+    def deserialize_queue_item(self):
+        """Pops a serialized object from the queue and creates an object from it"""
+        serialized_object = self.queue.get()
+        obj = serialized_object.create_object()
+        DIContainer.scene.objects.append(obj)
+        obj.material.texture_image.setSize(QSize(self.texture_size, self.texture_size))
+
+    def objects_not_loaded(self, count):
+        return len(DIContainer.scene.objects) != count
+
+    # endregion
 
     def thread_start_loading_images(self, action, thread_index):
         """Overrides action at index for the thread with same index to start the action"""
@@ -91,13 +118,6 @@ class ResourcesManager:
             self.generate_object_info(self.directory, self.files[i], self.positions[i], self.texture_size)
 
         self.stop_thread()
-
-    def stop_thread(self):
-        for i in range(0, self.number_of_threads):
-            if threading.current_thread() == self.threads[i]:
-                self.thread_actions[i] = None
-                print("Thread " + str(threading.get_ident()) + " finished loading")
-                DIContainer.main_window.repaint()
 
     def generate_object_info(self, directory: str, file: str, position: QVector3D, texture_size: int):
         """Calculates the necessary data to create an object and puts it in the queue
