@@ -2,7 +2,6 @@ import os, sys
 import time
 
 from PySide6.QtGui import *
-from time import perf_counter
 from Utilities import MiscFunctions
 from PySide6.QtCore import QRect, QSize, Qt
 from memory_profiler import profile
@@ -35,10 +34,10 @@ class ResourcesManager:
     def create_threads(self):
         for i in range(0, self.number_of_threads):
             self.thread_actions.append(None)
-            self.threads.append(threading.Thread(target=lambda x=i: self.thread_action(x)))
+            self.threads.append(threading.Thread(target=lambda x=i: self.thread_loop(x)))
             self.threads[i].start()
 
-    def thread_action(self, action_index: int):
+    def thread_loop(self, action_index: int):
         while True:
             if len(self.thread_actions) > action_index and self.thread_actions[action_index] is not None:
                 self.thread_actions[action_index]()
@@ -54,7 +53,7 @@ class ResourcesManager:
 
     # endregion
 
-    # region Multithreaded actions
+    # region Multithreaded top-level actions
     def start_classification(self):
         DIContainer.image_searcher.start_classification(True)
         self.stop_thread()
@@ -108,6 +107,7 @@ class ResourcesManager:
 
     # endregion
 
+    # region Loading images thread methods
     def thread_start_loading_images(self, action, thread_index):
         """Overrides action at index for the thread with same index to start the action"""
         self.thread_actions[thread_index] = action
@@ -155,6 +155,7 @@ class ResourcesManager:
         histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 256)
         obj.image = image
         obj.histogram = histogram
+    # endregion
 
     @staticmethod
     def load_image(path: str, image_size=0):
