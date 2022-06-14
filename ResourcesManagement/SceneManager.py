@@ -109,10 +109,21 @@ class SceneManager:
         positions_matrix = []
         last_x_deviation = 0
         last_x_mean = 0
-        x_offset = 2
+        x_offset = 4
+        y_offset = 4
 
         # TODO: think of the clusters as cubes (they have same deviation on all axes which means equal sizes)
         #  and group them as you were grouping the planes
+
+        deviation_sum = 0
+        for i in range(0, number_of_clusters):
+            number_of_images_in_cluster = classes_counts[i]
+            square_root = math.sqrt(number_of_images_in_cluster)
+            deviation_sum += square_root * 0.5
+
+        average_deviation = deviation_sum / number_of_clusters
+        clusters_per_row = int(math.sqrt(number_of_clusters))
+        last_row_index = 0
 
         for i in range(0, number_of_clusters):
             number_of_images_in_cluster = classes_counts[i]
@@ -123,10 +134,19 @@ class SceneManager:
 
             # Calculating means for a new normal distribution
             new_x_mean = last_x_mean + last_x_deviation * 3 + deviations[0] * 3 + x_offset
+
             last_x_deviation = deviations[0]
+
+            current_row = int(i / clusters_per_row)
+
+            if current_row != last_row_index:
+                new_x_mean = 0
+
             last_x_mean = new_x_mean
 
-            positions_matrix.append(self.generate_cluster_positions([new_x_mean, 0, 0], deviations, classes_counts[i]))
+            last_row_index = current_row
+            new_y_mean = current_row * (average_deviation * 3 + deviations[1] * 3 + y_offset)
+            positions_matrix.append(self.generate_cluster_positions([new_x_mean, new_y_mean, 0], deviations, classes_counts[i]))
 
         # Grouping the images
         positions_counter_matrix = np.zeros(number_of_clusters, dtype='int')
