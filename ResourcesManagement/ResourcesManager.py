@@ -68,7 +68,7 @@ class ResourcesManager:
         t1 = time.perf_counter()
         images_per_thread = int(count / self.number_of_threads)
 
-        # Dividing the data and assigning it to every available thread
+        # Dividing the data and assigning it to every available thread and starting the loop
         for i in range(0, self.number_of_threads):
             start = i * images_per_thread
             end = (i + 1) * images_per_thread - 1
