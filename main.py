@@ -27,7 +27,7 @@ scene.initialize()
 view.setRootEntity(scene)
 
 window.show()
-window.start_loading_images_in_scene(window.defaultImageDirectory, 1000)
+window.start_loading_images_in_scene(window.defaultImageDirectory, 5000)
 
 # execute and cleanup
 app.exec()

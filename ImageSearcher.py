@@ -82,7 +82,7 @@ class ImageSearcher:
 
     def get_optimal_k(self, data, using_distorions=False):
         """Uses elbow method with either distortion scores or inertia scores"""
-        max_k = 20 if len(data) >= 20 else len(data)
+        max_k = 20 if len(data) <= 20 else len(data)
         scores = []
         data = np.array(data)
         k_values = []
@@ -110,7 +110,7 @@ class ImageSearcher:
     def get_predicted_values(self, use_histograms):
         # Machine learning
         data = ImagesUtilities.get_histograms() if use_histograms else ImagesUtilities.get_channels_means_array()
-        self.k = self.get_optimal_k(data, True)
+        self.k = int(len(data) / 10)#self.get_optimal_k(data, True)
 
         print("Optimal K: " + str(self.k))
         k_means = KMeans(n_clusters=self.k)

@@ -19,7 +19,7 @@ from Utilities import ImagesUtilities
 class ResourcesManager:
 
     def __init__(self):
-        self.number_of_threads = 20
+        self.number_of_threads = 24
         self.threads = []
         self.thread_actions = []
         self.create_threads()
@@ -44,7 +44,12 @@ class ResourcesManager:
 
             time.sleep(0)
 
+    def start_classification(self):
+        DIContainer.image_searcher.start_classification(True)
+        self.stop_thread()
+
     def load_images_in_scene(self, count: int, directory: str, files: list, positions: list, texture_size: int):
+        """Will assign equal amounts of image data to load for every available thread and will start loading"""
         self.directory = directory
         self.files = files
         self.positions = positions
@@ -53,6 +58,7 @@ class ResourcesManager:
         t1 = time.perf_counter()
         images_per_thread = int(count / self.number_of_threads)
 
+        # Dividing the data and assigning it to every available thread
         for i in range(0, self.number_of_threads):
             start = i * images_per_thread
             end = (i + 1) * images_per_thread - 1
@@ -62,14 +68,18 @@ class ResourcesManager:
 
             self.thread_start_loading_images(lambda x=start, y=end: self.load_batch_of_images(x, y), i)
 
+        # Creating objects from the loaded data
         while len(DIContainer.scene.objects) != count:
             serialized_object = self.queue.get()
             obj = serialized_object.create_object()
             DIContainer.scene.objects.append(obj)
             obj.material.texture_image.setSize(QSize(self.texture_size, self.texture_size))
-            DIContainer.main_window.repaint()
+            DIContainer.main_window.update()
         t2 = time.perf_counter()
         print("Loading time: " + str(t2 - t1) + " using " + str(self.number_of_threads) + " threads")
+
+        # Starting parallel classification after finishing loading the images
+        self.thread_actions[0] = self.start_classification
 
     def thread_start_loading_images(self, action, thread_index):
         """Overrides action at index for the thread with same index to start the action"""
