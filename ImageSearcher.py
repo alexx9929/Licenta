@@ -28,7 +28,8 @@ class ImageSearcher:
     def search_image(self, path):
         """Searches the image through the clusters using a KNN algorithm"""
         image_cluster = self.get_image_cluster(path)
-        DIContainer.scene_manager.keep_one_cluster_active(image_cluster)
+        #DIContainer.camera_controller.start_movement_to_cluster(image_cluster)
+        #DIContainer.scene_manager.keep_one_cluster_active(image_cluster)
         pass
 
     def get_image_cluster(self, path):
@@ -124,7 +125,7 @@ class ImageSearcher:
 
     def get_predicted_values(self, use_histograms):
         # Machine learning
-        data = ImagesUtilities.get_histograms() if use_histograms else ImagesUtilities.get_channels_means_array()
+        data = ImagesUtilities.get_histograms()
        # self.k = int(len(data) / 10)
         self.k = self.get_optimal_k(data, True, False)
 
@@ -133,22 +134,16 @@ class ImageSearcher:
         model = k_means.fit(data)
         predicted_values = k_means.predict(data)
 
-        # # Plotting results
-        # r, g, b = ImagesUtilities.get_channels_means()
-        # DataVisualization.ml_color_channels_scatter(r, g, b, predicted_values)
         return predicted_values
 
     def get_image_class(self, image):
-        data = ImagesUtilities.get_channels_means_array()
-
-        # Preparing the image data
-        array = ImagesUtilities.swap_channels(cv2.mean(image)[:3])
-        converted_array = np.array(array).reshape(1, -1)
+        data = ImagesUtilities.get_histograms()
+        searched_data = np.array(ImagesUtilities.get_histogram(image)).reshape(1, -1)
 
         # Using the KNN algorithm
         knn = KNeighborsClassifier(n_neighbors=3, weights='distance')
         knn.fit(data, self.predicted_values)
-        predicted_class = knn.predict(converted_array)
+        predicted_class = knn.predict(searched_data)
 
         return predicted_class[0]
 

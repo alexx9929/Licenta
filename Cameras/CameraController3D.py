@@ -8,6 +8,7 @@ import time
 from PySide6.QtGui import QVector3D, QQuaternion
 import numpy as np
 import ImageSearcher
+from Utilities import MiscFunctions
 
 
 class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
@@ -119,10 +120,19 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
 
     def start_movement_to_object(self, obj: GameObject):
         self.target = obj
-        self.calculate_target_position(obj)
+        self.calculate_object_target_position(obj)
         self.start_movement_to_target(self.target_position)
 
-    def calculate_target_position(self, obj):
+    def start_movement_to_cluster(self, cluster_index: int):
+        self.calculate_cluster_target_position(cluster_index)
+        self.start_movement_to_target(self.target_position)
+
+    def calculate_cluster_target_position(self, cluster_index: int):
+        count = MiscFunctions.get_classes_counts()[cluster_index]
+        print(count)
+        pass
+
+    def calculate_object_target_position(self, obj):
         """Calculates target position based on the position of the object"""
         z_offset = 2
 

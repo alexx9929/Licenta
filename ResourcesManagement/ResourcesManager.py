@@ -150,12 +150,12 @@ class ResourcesManager:
         cv_img = cv2.imread(path)
         height, width, channel = cv_img.shape
         bytes_per_line = 3 * width
+        histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 20)
 
         # Creating a QImage from the cv2 image
         image = QImage(cv_img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped().scaled(
             QSize(self.texture_size, self.texture_size), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         # channels_means = cv2.mean(cv_img)[:3]
-        histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 20)
         obj.image = image
         obj.histogram = histogram
     # endregion

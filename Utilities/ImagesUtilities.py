@@ -19,14 +19,14 @@ def image_histogram(img, color_space, bins):
     img = cv2.cvtColor(img, code=code)
     concat_hist = []
 
-    #plt.figure()
+    # plt.figure()
     for i in range(3):
         channel = img[:, :, i]
         hist = cv2.calcHist([channel], [0], None, [bins], [0, max_val[i]])
         concat_hist.append(hist)
-        #plt.plot(hist)
+        # plt.plot(hist)
 
-    #plt.show()
+    # plt.show()
     return np.array(concat_hist).flatten()
 
 
@@ -71,6 +71,10 @@ def get_histograms():
         array.append(i.histogram)
 
     return array
+
+
+def get_histogram(cv_img):
+    return image_histogram(cv_img, 'HSV', 20)
 
 
 def swap_channels(channels_array):
