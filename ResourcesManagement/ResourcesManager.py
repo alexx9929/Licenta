@@ -18,7 +18,7 @@ from Utilities import ImagesUtilities
 class ResourcesManager:
 
     def __init__(self):
-        self.number_of_threads = 24
+        self.number_of_threads = 1
         self.threads = []
         self.thread_actions = []
         self.create_threads()
@@ -155,7 +155,7 @@ class ResourcesManager:
         image = QImage(cv_img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped().scaled(
             QSize(self.texture_size, self.texture_size), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         # channels_means = cv2.mean(cv_img)[:3]
-        histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 256)
+        histogram = ImagesUtilities.image_histogram(cv_img, 'HSV', 20)
         obj.image = image
         obj.histogram = histogram
     # endregion

@@ -1,5 +1,6 @@
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import silhouette_score
 from Utilities import MiscFunctions, DataVisualization, ImagesUtilities
 import DIContainer, cv2, math
 from matplotlib import pyplot as plt
@@ -80,37 +81,52 @@ class ImageSearcher:
 
         return correlations
 
-    def get_optimal_k(self, data, using_distorions=False):
-        """Uses elbow method with either distortion scores or inertia scores"""
-        max_k = 20 if len(data) <= 20 else len(data)
-        scores = []
+    def get_optimal_k(self, data, using_elbow, using_distorions=False):
+        """Uses elbow method or silhouette method with either distortion scores or inertia scores"""
+        max_k = 20 if len(data) >= 20 else len(data)
         data = np.array(data)
         k_values = []
+        scores = []
 
-        for k in range(2, max_k + 1):
-            k_values.append(k)
-            kmeans = KMeans(n_clusters=k)
-            kmeans.fit(data)
+        if not using_elbow:
+            for k in range(2, 11):
+                k_values.append(k)
+                kmeans = KMeans(n_clusters=k).fit(data)
+                print(kmeans.labels_)
+                sil_coeff = silhouette_score(data, kmeans.labels_, metric='euclidean')
+                scores.append(sil_coeff)
+                print("For n_clusters={}, The Silhouette Coefficient is {}".format(k, sil_coeff))
 
-            if using_distorions:
-                centers = kmeans.cluster_centers_
-                distortion_score = sum(np.min(cdist(data, centers, 'euclidean'), axis=1)) / data.shape[0]
-                scores.append(distortion_score)
-            else:
-                inertia_score = kmeans.inertia_
-                scores.append(inertia_score)
+            max = np.max(scores)
+            index = scores.index(max)
+            optimal_k = k_values[index]
+            print("Optimal K: " + str(optimal_k))
+            return optimal_k
+        else:
+            for k in range(2, max_k + 1):
+                k_values.append(k)
+                kmeans = KMeans(n_clusters=k)
+                kmeans.fit(data)
 
-        kneedle = KneeLocator(k_values, scores, curve="convex", direction="decreasing")
-        # plt.figure()
-        # plt.title("Optimal K")
-        # plt.plot(scores)
-        # plt.show()
-        return kneedle.knee
+                if using_distorions:
+                    distortion_score = sum(np.min(cdist(data, kmeans.cluster_centers_, 'euclidean'), axis=1)) / data.shape[0]
+                    scores.append(distortion_score)
+                else:
+                    inertia_score = kmeans.inertia_
+                    scores.append(inertia_score)
+
+            kneedle = KneeLocator(k_values, scores, curve="convex", direction="decreasing")
+            # plt.figure()
+            # plt.title("Optimal K")
+            # plt.plot(scores)
+            # plt.show()
+            return kneedle.knee
 
     def get_predicted_values(self, use_histograms):
         # Machine learning
         data = ImagesUtilities.get_histograms() if use_histograms else ImagesUtilities.get_channels_means_array()
-        self.k = int(len(data) / 10)#self.get_optimal_k(data, True)
+       # self.k = int(len(data) / 10)
+        self.k = self.get_optimal_k(data, True, False)
 
         print("Optimal K: " + str(self.k))
         k_means = KMeans(n_clusters=self.k)
