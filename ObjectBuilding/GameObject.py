@@ -45,7 +45,7 @@ class GameObject(Qt3DCore.QEntity):
             main_window.clicked_object = self.name
 
     def on_double_click(self):
-        DIContainer.camera_controller.start_object_focus(self)
+        DIContainer.camera_controller.start_movement_to_object(self)
 
     @staticmethod
     def __DEFAULT_GAMEOBJECT_NAME__():

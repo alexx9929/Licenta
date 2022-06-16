@@ -73,7 +73,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
             else:
                 time.sleep(0)
 
-    def focus_on_object(self):
+    def move_to_target(self):
         """This function moves and rotates the camera smoothly until it reaches its target
          while keeping the input inactive"""
         if self.interpolation_factor <= 1:
@@ -97,12 +97,12 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
                 DIContainer.main_window.clicked_object = None
                 self.released_control = True
 
-    def start_object_focus(self, obj: GameObject):
+    def start_movement_to_target(self, target_position: QVector3D):
         """Calculates the necessary parameters for a smooth transition to the target and starts
         the control thread that will move the camera"""
         self.initial_position = self.camera_holder.get_position()
 
-        self.calculate_target_position(obj)
+        self.target_position = target_position
         self.calculate_initial_distance()
 
         if self.initial_distance < self.minimum_distance:
@@ -114,9 +114,13 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.calculate_rotation_steps()
 
         # Starts movement
-        self.target = obj
         DIContainer.input_handler.block_mouse_input()
-        self.control_callback = self.focus_on_object
+        self.control_callback = self.move_to_target
+
+    def start_movement_to_object(self, obj: GameObject):
+        self.target = obj
+        self.calculate_target_position(obj)
+        self.start_movement_to_target(self.target_position)
 
     def calculate_target_position(self, obj):
         """Calculates target position based on the position of the object"""
