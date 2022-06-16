@@ -28,6 +28,8 @@ class SceneManager:
         # Images ratios
         self.ratios = {}
         self.keep_aspect_ratios = True
+
+        self.clusters_distributions = []
         pass
 
     def set_image_count(self, count):
@@ -100,6 +102,7 @@ class SceneManager:
 
     def group_clusters(self):
         """Repositions all images to highlight the clusters"""
+        self.clusters_distributions = []
         number_of_clusters = DIContainer.image_searcher.k
         classes_counts = MiscFunctions.get_classes_counts()
         predicted_values = DIContainer.image_searcher.predicted_values
@@ -146,7 +149,9 @@ class SceneManager:
 
             last_row_index = current_row
             new_y_mean = current_row * (average_deviation * 3 + deviations[1] * 3 + y_offset)
-            positions_matrix.append(self.generate_cluster_positions([new_x_mean, new_y_mean, 0], deviations, classes_counts[i]))
+            means = [new_x_mean, new_y_mean, 0]
+            self.clusters_distributions.append((means, deviations))
+            positions_matrix.append(self.generate_cluster_positions(means, deviations, classes_counts[i]))
 
         # Grouping the images
         positions_counter_matrix = np.zeros(number_of_clusters, dtype='int')

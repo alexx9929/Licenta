@@ -128,9 +128,13 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.start_movement_to_target(self.target_position)
 
     def calculate_cluster_target_position(self, cluster_index: int):
-        count = MiscFunctions.get_classes_counts()[cluster_index]
-        print(count)
-        pass
+        means = DIContainer.scene_manager.clusters_distributions[cluster_index][0]
+        deviations = DIContainer.scene_manager.clusters_distributions[cluster_index][1]
+        z_offset = 2
+        x_pos = means[0]
+        y_pos = means[1]
+        z_pos = means[2] + deviations[2] * 3 + 2
+        self.target_position = QVector3D(x_pos, y_pos, z_pos)
 
     def calculate_object_target_position(self, obj):
         """Calculates target position based on the position of the object"""

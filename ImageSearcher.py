@@ -28,7 +28,7 @@ class ImageSearcher:
     def search_image(self, path):
         """Searches the image through the clusters using a KNN algorithm"""
         image_cluster = self.get_image_cluster(path)
-        #DIContainer.camera_controller.start_movement_to_cluster(image_cluster)
+        DIContainer.camera_controller.start_movement_to_cluster(image_cluster)
         #DIContainer.scene_manager.keep_one_cluster_active(image_cluster)
         pass
 
