@@ -1,7 +1,8 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QLineEdit, QFileDialog
+from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QGridLayout, QLineEdit, QFileDialog, QLabel, QCheckBox
 import DIContainer, os
 from ObjectBuilding.Visuals import MeshBuilder
 from PySide6.QtCore import Qt
+from GUI.LeftPanel.DirectoryWidget import DirectoryWidget
 
 
 class LeftPanel(QWidget):
@@ -12,24 +13,24 @@ class LeftPanel(QWidget):
         self.image_searcher = DIContainer.image_searcher
         self.resources_manager = DIContainer.resources_manager
 
+        self.directoryWidget = DirectoryWidget()
+
         # Buttons
         self.loadImagesButton = QPushButton("Load images")
+        self.countLabel = QLabel("Image count")
         self.imageCountLineEdit = QLineEdit()
+        self.allImagesToggle = QCheckBox("All")
         self.searchImageButton = QPushButton("Search image")
 
         # Layout setup
         self.setFixedSize(200, self.height())
 
-        self.leftPanelLayout = QGridLayout()
-        self.setLayout(self.leftPanelLayout)
+        self.panelLayout = QGridLayout()
+        self.panelLayout.setAlignment(Qt.AlignTop)
+        self.panelLayout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.panelLayout)
 
-        self.leftPanelLayout.addWidget(self.loadImagesButton)
-        self.leftPanelLayout.addWidget(self.imageCountLineEdit)
-        self.leftPanelLayout.addWidget(self.searchImageButton)
-     #   self.leftPanelLayout.setAlignment(self.loadImagesButton, Qt.AlignTop)
-      #  self.leftPanelLayout.setAlignment(self.imageCountLineEdit, Qt.AlignTop)
-        #self.leftPanelLayout.setAlignment(self.searchImageButton, Qt.AlignTop)
-        self.leftPanelLayout.setAlignment(Qt.AlignTop)
+        self.panelLayout.addWidget(self.directoryWidget)
 
         self.setup_actions()
         pass

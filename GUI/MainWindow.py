@@ -1,11 +1,11 @@
 import DIContainer
 from PySide6.QtWidgets import *
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QRect, Qt
 import PySide6
 from threading import Thread
 import time
 from GUI.ImageMetadataPanel import ImageMetadataPanel
-from GUI.LeftPanel import LeftPanel
+from GUI.LeftPanel.LeftPanel import LeftPanel
 
 
 class MainWindow(QMainWindow):
@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         self.boxLayout.setContentsMargins(0, 0, 0, 0)
         self.boxLayout.addWidget(self.leftPanel)
         self.boxLayout.addWidget(self.container)
-        self.boxLayout.setAlignment(self.leftPanel,PySide6.QtCore.Qt.AlignTop)
+        self.boxLayout.setAlignment(self.leftPanel, Qt.AlignTop)
 
     # TODO: move to check to app's event filter to remove the need for a new thread
     def click_check(self):
