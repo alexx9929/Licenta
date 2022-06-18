@@ -14,7 +14,6 @@ from ImageSearcher import ImageSearcher
 app = DIContainer.app = QApplication(sys.argv)
 DIContainer.input_handler = GUI.InputHandler.InputHandler()
 view = DIContainer.view = Qt3DExtras.Qt3DWindow()
-
 DIContainer.resources_manager = ResourcesManager.ResourcesManager()
 DIContainer.scene_manager = SceneManager.SceneManager()
 DIContainer.window_container = QWidget.createWindowContainer(view)
@@ -27,7 +26,7 @@ scene.initialize()
 view.setRootEntity(scene)
 
 window.show()
-window.start_loading_images_in_scene(window.defaultImageDirectory, 42)
+# window.start_loading_images_in_scene(window.defaultImageDirectory, 5)
 
 # execute and cleanup
 app.exec()

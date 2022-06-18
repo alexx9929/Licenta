@@ -86,7 +86,7 @@ class ResourcesManager:
         print("Loading time: " + str(t2 - t1) + " using " + str(self.number_of_threads) + " threads")
 
         # Starting parallel classification after finishing loading the images
-        self.thread_actions[0] = self.start_classification
+        #self.thread_actions[0] = self.start_classification
        # self.thread_actions[1] = self.f
 
 
