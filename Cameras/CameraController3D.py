@@ -120,6 +120,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
 
     def start_movement_to_object(self, obj: GameObject):
         self.target = obj
+        DIContainer.image_data_widget.set_data(obj)
         self.calculate_object_target_position(obj)
         self.start_movement_to_target(self.target_position)
 

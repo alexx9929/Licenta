@@ -47,6 +47,9 @@ class GameObject(Qt3DCore.QEntity):
     def on_double_click(self):
         DIContainer.camera_controller.start_movement_to_object(self)
 
+    def get_texture_image(self):
+        return self.material.texture_image
+
     @staticmethod
     def __DEFAULT_GAMEOBJECT_NAME__():
         return str("GameObject(" + str(DIContainer.scene.objectIndex) + ")")

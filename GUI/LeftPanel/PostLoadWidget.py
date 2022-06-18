@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QFileDialog, QLabel, QCheckBox, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QFileDialog, QLabel, QCheckBox, QHBoxLayout, QSizePolicy
 import DIContainer, os
 from PySide6.QtCore import Qt
 from Utilities import MiscFunctions

@@ -9,12 +9,13 @@ class ImageDataWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+        DIContainer.image_data_widget = self
         self.dataLabel = QLabel("Image data")
         self.widgetLayout = QVBoxLayout()
         self.dataLayout = QGridLayout()
 
         self.filenameLabel = QLabel("Name: ")
-        self.filenameField = QLabel("Filename")
+        self.filenameField = QLabel()
 
         self.setup()
         pass
@@ -28,3 +29,7 @@ class ImageDataWidget(QWidget):
 
         self.dataLayout.addWidget(self.filenameLabel, 0, 0)
         self.dataLayout.addWidget(self.filenameField, 0, 1)
+
+    def set_data(self, obj):
+        texture_image = obj.get_texture_image()
+        self.filenameField.setText(texture_image.filename)

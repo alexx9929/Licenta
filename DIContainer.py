@@ -10,6 +10,7 @@ app = None
 input_handler = None
 resources_manager = None
 post_load_widget = None
+image_data_widget = None
 
 # defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
 working_directory = 'C:\\Users\\serba\\Desktop\\Thermal'
