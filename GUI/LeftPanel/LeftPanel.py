@@ -38,7 +38,7 @@ class LeftPanel(QWidget):
     def setup_actions(self):
         self.loadImagesButton.clicked.connect(
             lambda x: self.start_loading_images_in_scene(
-                QFileDialog.getExistingDirectory(dir=DIContainer.defaultImageDirectory),
+                QFileDialog.getExistingDirectory(dir=DIContainer.working_directory),
                 self.scene_manager.image_count))
 
         self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
@@ -46,7 +46,7 @@ class LeftPanel(QWidget):
             lambda x: self.scene_manager.set_image_count(int(self.imageCountLineEdit.text())))
         self.searchImageButton.clicked.connect(
             lambda x: self.search_button_action(
-                QFileDialog.getOpenFileName(self, dir=DIContainer.defaultImageDirectory, caption='Select image',
+                QFileDialog.getOpenFileName(self, dir=DIContainer.working_directory, caption='Select image',
                                             filter="JPEG (*.jpg *.jpeg)")[0]))
 
     def search_button_action(self, path: str):

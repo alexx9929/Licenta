@@ -1,4 +1,4 @@
-import math, sys, gc, pympler
+import math, sys, gc, pympler, os
 
 import numpy as np
 from pympler import asizeof
@@ -49,3 +49,13 @@ def get_all_texture_images():
         texture_images.append(obj.material.texture_image)
 
     return texture_images
+
+
+def format_number_string(number: int):
+    formatted = '{:,}'.format(number)
+    return formatted
+
+def get_dataset_length(directory):
+    files = os.listdir(directory)
+    return len(files)
+

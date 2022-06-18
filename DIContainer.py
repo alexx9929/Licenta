@@ -11,5 +11,5 @@ input_handler = None
 resources_manager = None
 
 # defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
-defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\Thermal'
+working_directory = 'C:\\Users\\serba\\Desktop\\Thermal'
 texture_size = 255
