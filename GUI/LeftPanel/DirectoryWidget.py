@@ -2,12 +2,14 @@ from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QFil
 import DIContainer, os
 from PySide6.QtCore import Qt
 from Utilities import MiscFunctions
+from GUI.LeftPanel import LeftPanel
 
 
 class DirectoryWidget(QWidget):
 
-    def __init__(self):
+    def __init__(self, left_panel: LeftPanel):
         super().__init__()
+        self.leftPanel = left_panel
         # Elements
         self.datasetFolderLabel = QLabel("Dataset directory")
         self.pathLineEdit = QLineEdit(DIContainer.working_directory)
@@ -39,7 +41,6 @@ class DirectoryWidget(QWidget):
             return
         else:
             self.pathLineEdit.setText(directory)
-            self.on_path_chosen()
 
     def on_path_chosen(self):
         if os.path.isdir(self.pathLineEdit.text()):
@@ -47,6 +48,8 @@ class DirectoryWidget(QWidget):
             length = MiscFunctions.get_dataset_length(self.pathLineEdit.text())
             DIContainer.max_dataset_length = length
             self.update_files_label(length)
+            if "loadingWidget" in self.leftPanel.__dict__:
+                self.leftPanel.loadingWidget.update_validator()
         else:
             self.filesLabel.setText("Invalid path")
 

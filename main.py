@@ -1,8 +1,6 @@
-import sys, os, gc, DIContainer
-import PySide6
+import sys, DIContainer
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.Qt3DExtras import Qt3DExtras
-from PySide6.QtCore import QObject, QEvent
 
 import GUI.InputHandler
 from Scene import Scene
@@ -10,7 +8,6 @@ from GUI.MainWindow import MainWindow
 from ResourcesManagement import SceneManager, ResourcesManager
 from ImageSearcher import ImageSearcher
 
-# Set up the application window
 app = DIContainer.app = QApplication(sys.argv)
 DIContainer.input_handler = GUI.InputHandler.InputHandler()
 view = DIContainer.view = Qt3DExtras.Qt3DWindow()

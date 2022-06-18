@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QGridLayout, QLineEdit, QFileDialog, QLabel, QCheckBox
-import DIContainer, os
+from PySide6.QtWidgets import QWidget, QGridLayout
 from PySide6.QtCore import Qt
 from GUI.LeftPanel.DirectoryWidget import DirectoryWidget
 from GUI.LeftPanel.LoadingWidget import LoadingWidget
@@ -9,7 +8,7 @@ class LeftPanel(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.directoryWidget = DirectoryWidget()
+        self.directoryWidget = DirectoryWidget(self)
         self.loadingWidget = LoadingWidget()
 
         # Layout setup
