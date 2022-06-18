@@ -41,16 +41,12 @@ class LoadingWidget(QWidget):
 
     def update_validator(self):
         self.validator.setTop(DIContainer.max_dataset_length)
-        print(DIContainer.max_dataset_length)
 
     def setup_actions(self):
         self.allImagesToggle.clicked.connect(
             lambda x: self.imageCountLineEdit.setEnabled(not self.allImagesToggle.isChecked()))
 
-        self.loadImagesButton.clicked.connect(
-            lambda x: self.start_loading_images_in_scene(
-                QFileDialog.getExistingDirectory(dir=DIContainer.working_directory),
-                self.scene_manager.image_count))
+        self.loadImagesButton.clicked.connect(lambda x: self.start_loading_images_in_scene())
 
         self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
         self.searchImageButton.clicked.connect(
@@ -64,10 +60,9 @@ class LoadingWidget(QWidget):
 
         self.image_searcher.search_image(path)
 
-    def start_loading_images_in_scene(self, directory: str, count: int):
-        if not directory or directory == "":
-            return
-
+    def start_loading_images_in_scene(self):
+        count = DIContainer.max_dataset_length if self.allImagesToggle.isChecked() else int(self.imageCountLineEdit.text())
+        directory = DIContainer.working_directory
         DIContainer.scene.clear_scene()
         DIContainer.default_mesh = MeshBuilder.create_plane_mesh()
 

@@ -1,6 +1,7 @@
 import sys, DIContainer
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.Qt3DExtras import Qt3DExtras
+from PySide6.Qt3DRender import Qt3DRender
 
 import GUI.InputHandler
 from Scene import Scene
@@ -11,6 +12,8 @@ from ImageSearcher import ImageSearcher
 app = DIContainer.app = QApplication(sys.argv)
 DIContainer.input_handler = GUI.InputHandler.InputHandler()
 view = DIContainer.view = Qt3DExtras.Qt3DWindow()
+view.renderSettings().pickingSettings().setPickMethod(Qt3DRender.QPickingSettings.PrimitivePicking)
+
 DIContainer.resources_manager = ResourcesManager.ResourcesManager()
 DIContainer.scene_manager = SceneManager.SceneManager()
 DIContainer.window_container = QWidget.createWindowContainer(view)

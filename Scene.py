@@ -25,3 +25,5 @@ class Scene(Qt3DCore.QEntity):
 
     def clear_scene(self):
         self.objects.clear()
+        DIContainer.window_container.update()
+        DIContainer.main_window.update()
