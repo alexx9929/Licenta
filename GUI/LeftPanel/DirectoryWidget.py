@@ -12,7 +12,7 @@ class DirectoryWidget(QWidget):
         self.datasetFolderLabel = QLabel("Dataset directory")
         self.pathLineEdit = QLineEdit(DIContainer.working_directory)
         self.browseButton = QPushButton("Browse")
-        self.filesLabel = QLabel("No directory selected")
+        self.filesLabel = QLabel("Invalid path")
 
         # Styling
         self.datasetFolderLabel.setAlignment(Qt.AlignHCenter)
@@ -30,6 +30,7 @@ class DirectoryWidget(QWidget):
 
     def setup(self):
         self.browseButton.clicked.connect(lambda x: self.on_browse_button())
+        self.pathLineEdit.textChanged.connect(lambda x: self.on_path_chosen())
 
     def on_browse_button(self):
         directory = QFileDialog.getExistingDirectory(dir=DIContainer.working_directory)
@@ -45,6 +46,8 @@ class DirectoryWidget(QWidget):
             DIContainer.working_directory = self.pathLineEdit.text()
             length = MiscFunctions.get_dataset_length(self.pathLineEdit.text())
             self.update_files_label(length)
+        else:
+            self.filesLabel.setText("Invalid path")
 
     def update_files_label(self, images_count: int):
         formatted_count = MiscFunctions.format_number_string(images_count)
