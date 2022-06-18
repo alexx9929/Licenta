@@ -45,6 +45,7 @@ class DirectoryWidget(QWidget):
         if os.path.isdir(self.pathLineEdit.text()):
             DIContainer.working_directory = self.pathLineEdit.text()
             length = MiscFunctions.get_dataset_length(self.pathLineEdit.text())
+            DIContainer.max_dataset_length = length
             self.update_files_label(length)
         else:
             self.filesLabel.setText("Invalid path")

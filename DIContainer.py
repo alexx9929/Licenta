@@ -13,3 +13,4 @@ resources_manager = None
 # defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
 working_directory = 'C:\\Users\\serba\\Desktop\\Thermal'
 texture_size = 255
+max_dataset_length = 0
