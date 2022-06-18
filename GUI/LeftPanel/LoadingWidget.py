@@ -3,7 +3,7 @@ import DIContainer, os
 from PySide6.QtCore import Qt
 from Utilities import MiscFunctions
 from ObjectBuilding.Visuals import MeshBuilder
-from PySide6.QtGui import QIntValidator
+from PySide6.QtGui import QIntValidator, QPalette
 
 
 class LoadingWidget(QWidget):
@@ -11,7 +11,6 @@ class LoadingWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.scene_manager = DIContainer.scene_manager
-        self.image_searcher = DIContainer.image_searcher
         self.resources_manager = DIContainer.resources_manager
 
         # Elements
@@ -19,24 +18,35 @@ class LoadingWidget(QWidget):
         self.imageCountLineEdit = QLineEdit()
         self.allImagesToggle = QCheckBox("All")
         self.loadImagesButton = QPushButton("Load images")
-        self.searchImageButton = QPushButton("Search image")
+        self.errorLabel = QLabel("Invalid image count")
+
+        self.errorPallete = QPalette()
 
         self.widgetLayout = QVBoxLayout()
-        self.widgetLayout.addWidget(self.countLabel)
-
         self.countLayout = QHBoxLayout()
+        self.validator = QIntValidator(10, DIContainer.max_dataset_length)
+
+        self.setup()
+
+    def setup(self):
+        self.widgetLayout.addWidget(self.countLabel)
         self.countLayout.addWidget(self.imageCountLineEdit)
         self.countLayout.addWidget(self.allImagesToggle)
 
         self.widgetLayout.addLayout(self.countLayout)
         self.widgetLayout.addWidget(self.loadImagesButton)
-        self.widgetLayout.addWidget(self.searchImageButton)
+        self.widgetLayout.addWidget(self.errorLabel)
+
+        self.errorPallete.setColor(QPalette.WindowText, Qt.red)
+
+        self.errorLabel.setPalette(self.errorPallete)
+        self.errorLabel.hide()
         self.setLayout(self.widgetLayout)
 
-        self.validator = QIntValidator(10, DIContainer.max_dataset_length)
         self.validator.setBottom(10)
         self.imageCountLineEdit.setValidator(self.validator)
 
+        #self.countLabel.setAlignment(Qt.AlignHCenter)
         self.setup_actions()
 
     def update_validator(self):
@@ -47,21 +57,18 @@ class LoadingWidget(QWidget):
             lambda x: self.imageCountLineEdit.setEnabled(not self.allImagesToggle.isChecked()))
 
         self.loadImagesButton.clicked.connect(lambda x: self.start_loading_images_in_scene())
-
-        self.imageCountLineEdit.setText(str(self.scene_manager.image_count))
-        self.searchImageButton.clicked.connect(
-            lambda x: self.search_button_action(
-                QFileDialog.getOpenFileName(self, dir=DIContainer.working_directory, caption='Select image',
-                                            filter="JPEG (*.jpg *.jpeg)")[0]))
-
-    def search_button_action(self, path: str):
-        if not path or path == "":
-            return
-
-        self.image_searcher.search_image(path)
+        self.imageCountLineEdit.setText(str(10))
 
     def start_loading_images_in_scene(self):
-        count = DIContainer.max_dataset_length if self.allImagesToggle.isChecked() else int(self.imageCountLineEdit.text())
+        count = DIContainer.max_dataset_length if self.allImagesToggle.isChecked() else int(
+            self.imageCountLineEdit.text())
+
+        if count > DIContainer.max_dataset_length:
+            self.errorLabel.show()
+            return
+        else:
+            self.errorLabel.hide()
+
         directory = DIContainer.working_directory
         DIContainer.scene.clear_scene()
         DIContainer.default_mesh = MeshBuilder.create_plane_mesh()

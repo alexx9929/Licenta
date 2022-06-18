@@ -18,7 +18,7 @@ from Utilities import ImagesUtilities
 class ResourcesManager:
 
     def __init__(self):
-        self.number_of_threads = 1
+        self.number_of_threads = 10
         self.threads = []
         self.thread_actions = []
         self.create_threads()
@@ -53,10 +53,13 @@ class ResourcesManager:
 
     # endregion
 
+    def thread_start_classification(self, thread_index):
+        self.thread_actions[thread_index] = self.start_classification
+
     # region Multithreaded top-level actions
     def start_classification(self):
         DIContainer.image_searcher.start_classification(True)
-        DIContainer.scene_manager.group_clusters()
+        DIContainer.post_load_widget.enable_group_clusters_button(True)
         self.stop_thread()
 
     def load_images_in_scene(self, count: int, directory: str, files: list, positions: list, texture_size: int):
@@ -85,10 +88,9 @@ class ResourcesManager:
         t2 = time.perf_counter()
         print("Loading time: " + str(t2 - t1) + " using " + str(self.number_of_threads) + " threads")
 
-        # Starting parallel classification after finishing loading the images
-        #self.thread_actions[0] = self.start_classification
-       # self.thread_actions[1] = self.f
-
+        DIContainer.post_load_widget.enable_group_clusters_button(False)
+        DIContainer.post_load_widget.enable_search_button(False)
+        DIContainer.post_load_widget.enable_classification_button(True)
 
     # endregion
 
@@ -158,6 +160,7 @@ class ResourcesManager:
         # channels_means = cv2.mean(cv_img)[:3]
         obj.image = image
         obj.histogram = histogram
+
     # endregion
 
     @staticmethod

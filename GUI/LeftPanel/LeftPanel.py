@@ -2,6 +2,8 @@ from PySide6.QtWidgets import QWidget, QGridLayout
 from PySide6.QtCore import Qt
 from GUI.LeftPanel.DirectoryWidget import DirectoryWidget
 from GUI.LeftPanel.LoadingWidget import LoadingWidget
+from GUI.LeftPanel.PostLoadWidget import PostLoadWidget
+import DIContainer
 
 
 class LeftPanel(QWidget):
@@ -10,6 +12,7 @@ class LeftPanel(QWidget):
         super().__init__()
         self.directoryWidget = DirectoryWidget(self)
         self.loadingWidget = LoadingWidget()
+        self.postLoadWidget = DIContainer.post_load_widget = PostLoadWidget()
 
         # Layout setup
         self.setFixedSize(200, self.height())
@@ -21,4 +24,5 @@ class LeftPanel(QWidget):
 
         self.panelLayout.addWidget(self.directoryWidget)
         self.panelLayout.addWidget(self.loadingWidget)
+        self.panelLayout.addWidget(self.postLoadWidget)
         pass
