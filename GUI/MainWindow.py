@@ -4,7 +4,7 @@ from PySide6.QtCore import QRect, Qt
 import PySide6
 from threading import Thread
 import time
-from GUI.ImageMetadataPanel import ImageMetadataPanel
+from GUI.ImageDataWidget import ImageDataWidget
 from GUI.LeftPanel.LeftPanel import LeftPanel
 
 
