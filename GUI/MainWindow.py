@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         self.boxLayout.setContentsMargins(0, 0, 0, 0)
         self.boxLayout.addWidget(self.leftPanel)
         self.boxLayout.addWidget(self.container)
+        self.boxLayout.setAlignment(self.leftPanel,PySide6.QtCore.Qt.AlignTop)
 
     # TODO: move to check to app's event filter to remove the need for a new thread
     def click_check(self):
