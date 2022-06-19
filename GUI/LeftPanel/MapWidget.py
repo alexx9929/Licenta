@@ -23,6 +23,15 @@ class MapWidget(QWebEngineView):
         if add_marker:
             tooltip = "N: " + str(north)[:7] + " E: " + str(east)[:7]
             folium.Marker([north, east], tooltip=tooltip).add_to(folium_map)
+
+        folium.Polygon([(19.0821978, 72.7411), (28.6471948, 76.9531796), (24.2170111233401, 81.0791015625000),
+                        (20.7021709, 76.9905048), (12.9542946, 77.490855)],
+                       color="red",
+                       weight=2,
+                       fill=True,
+                       fill_color="white",
+                       fill_opacity=0.4).add_to(folium_map)
+
         self.setHtml(folium_map.get_root().render())
 
     def reset_map(self):

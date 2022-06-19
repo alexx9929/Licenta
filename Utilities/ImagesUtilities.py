@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 from Utilities import MiscFunctions
 import matplotlib.pyplot as plt
+from PIL import Image
+import PIL.ExifTags
+import datetime
 
 
 def image_histogram(img, color_space, bins):
@@ -80,3 +83,53 @@ def get_histogram(cv_img):
 def swap_channels(channels_array):
     """Used to swap from BGR to RGB"""
     return np.array([channels_array[2], channels_array[1], channels_array[0]])
+
+
+def get_info_from_object(obj):
+    info = {}
+    texture_image = obj.get_texture_image()
+    img = PIL.Image.open(texture_image.get_full_path())
+    info['Name'] = texture_image.filename
+
+    if img._getexif() is not None:
+        exif_data = {
+            PIL.ExifTags.TAGS[key]: value
+            for key, value in img._getexif().items()
+            if key in PIL.ExifTags.TAGS
+        }
+
+        if exif_data.keys().__contains__('GPSInfo'):
+            dd_north = dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1],
+                                 exif_data['GPSInfo'][2][2])
+            dd_east = dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
+            info['N'] = dd_north
+            info['E'] = dd_east
+
+            above_sea_level = int.from_bytes(exif_data['GPSInfo'][5], 'big') == 1
+            alt = exif_data['GPSInfo'][6]
+
+            altitude_string = str(alt) + "m " + "below sea level" if above_sea_level else str(
+                alt) + "m " + "above sea level"
+
+            info['Altitude'] = altitude_string
+
+        if exif_data.keys().__contains__("DateTime"):
+            string = exif_data["DateTime"]
+            split = string.split(" ")
+            date = split[0]
+            time = split[1]
+
+            date_split = date.split(":")
+            date_time_obj = datetime.datetime.strptime(date_split[1], "%m")
+            month_name = date_time_obj.strftime("%b")
+
+            formatted_date = date_split[2] + " " + month_name + " " + date_split[0]
+            info['Date'] = formatted_date
+            info['Time'] = time
+
+    return info
+
+
+def dms_to_dd(d, m, s):
+    dd = d + float(m) / 60 + float(s) / 3600
+    return dd

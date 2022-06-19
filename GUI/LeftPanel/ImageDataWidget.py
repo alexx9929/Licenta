@@ -10,6 +10,7 @@ from PIL import Image
 import PIL.ExifTags
 import datetime
 import pprint
+from Utilities import ImagesUtilities
 
 
 class ImageDataWidget(QWidget):
@@ -49,63 +50,34 @@ class ImageDataWidget(QWidget):
         self.mapWidget.setMinimumHeight(400)
 
     def set_data(self, obj):
-        texture_image = obj.get_texture_image()
-        img = PIL.Image.open(texture_image.get_full_path())
+        info = ImagesUtilities.get_info_from_object(obj)
+        self.filenameField.setText(info['Name'])
+        self.load_coordinates(info)
+        self.load_dateTime(info)
 
-        if img._getexif() is not None:
-            exif_data = {
-                PIL.ExifTags.TAGS[key]: value
-                for key, value in img._getexif().items()
-                if key in PIL.ExifTags.TAGS
-            }
-            self.load_coordinates(exif_data)
-            self.load_dateTime(exif_data)
+    def load_coordinates(self, info):
+        if info.keys().__contains__('N') and info.keys().__contains__('E'):
+            DIContainer.map_widget.new_map(info['N'], info['E'])
         else:
-            self.load_coordinates()
-            self.load_dateTime()
-
-        self.filenameField.setText(texture_image.filename)
-
-    def load_coordinates(self, exif_data=None):
-        if exif_data is None:
             DIContainer.map_widget.reset_map()
+
+        if info.keys().__contains__('Altitude'):
+            self.altitudeField.setText(info['Altitude'])
+        else:
             self.altitudeField.setText("")
+
+    def load_dateTime(self, info):
+        if info.keys().__contains__('Date') and info.keys().__contains__('Time'):
+            self.createdField.setText(info['Date'] + "  " + info['Time'])
             return
 
-        above_sea_level = int.from_bytes(exif_data['GPSInfo'][5], 'big') == 1
-        alt = exif_data['GPSInfo'][6]
-
-        altitude_string = str(alt) + "m " + "below sea level" if above_sea_level else str(
-            alt) + "m " + "above sea level"
-
-        self.altitudeField.setText(altitude_string)
-        dd_north = self.dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1], exif_data['GPSInfo'][2][2])
-        dd_east = self.dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
-
-        # url = "https://www.google.com/maps/place/" + self.format_gps_coordinates(str(exif_data['GPSInfo'][2]),
-        # str(exif_data['GPSInfo'][4]))
-        DIContainer.map_widget.new_map(dd_north, dd_east)
-
-    def load_dateTime(self, exif_data=None):
-        if exif_data is None:
-            self.createdField.setText("")
-            return
-
-        string = exif_data["DateTime"]
-        split = string.split(" ")
-        date = split[0]
-        time = split[1]
-
-        date_split = date.split(":")
-        date_time_obj = datetime.datetime.strptime(date_split[1], "%m")
-        month_name = date_time_obj.strftime("%b")
-
-        formatted_date = date_split[2] + " " + month_name + " " + date_split[0]
-        self.createdField.setText(formatted_date + "  " + str(time))
-
-    def dms_to_dd(self, d, m, s):
-        dd = d + float(m) / 60 + float(s) / 3600
-        return dd
+        if info.keys().__contains__('Date') and not info.keys().__contains__('Time'):
+            self.createdField.setText(info['Date'])
+        else:
+            if not info.keys().__contains__('Date') and info.keys().__contains__('Time'):
+                self.createdField.setText(info['Time'])
+            else:
+                self.createdField.setText("")
 
     def format_gps_coordinates(self, north: str, east: str):
         split = north[1:-1].split(",")
