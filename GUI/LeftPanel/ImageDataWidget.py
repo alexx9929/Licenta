@@ -24,6 +24,8 @@ class ImageDataWidget(QWidget):
         self.filenameField = QLabel()
         self.createdLabel = QLabel("Created on: ")
         self.createdField = QLabel()
+        self.altitudeLabel = QLabel("Altitude: ")
+        self.altitudeField = QLabel()
 
         self.setup()
         pass
@@ -38,7 +40,9 @@ class ImageDataWidget(QWidget):
         self.dataLayout.addWidget(self.filenameField, 0, 1)
         self.dataLayout.addWidget(self.createdLabel, 1, 0)
         self.dataLayout.addWidget(self.createdField, 1, 1)
-        self.dataLayout.addWidget(self.mapWidget, 2, 0, 1, 2)
+        self.dataLayout.addWidget(self.altitudeLabel, 2, 0)
+        self.dataLayout.addWidget(self.altitudeField, 2, 1)
+        self.dataLayout.addWidget(self.mapWidget, 3, 0, 1, 2)
 
         self.setLayout(self.widgetLayout)
         self.mapWidget.setMinimumHeight(400)
@@ -59,6 +63,14 @@ class ImageDataWidget(QWidget):
         self.filenameField.setText(texture_image.filename)
 
     def load_coordinates(self, exif_data):
+        print(exif_data['GPSInfo'])
+        above_sea_level = int.from_bytes(exif_data['GPSInfo'][5], 'big') == 1
+        alt = exif_data['GPSInfo'][6]
+
+        altitude_string = str(alt) + "m " + "below sea level" if above_sea_level else str(
+            alt) + "m " + "above sea level"
+
+        self.altitudeField.setText(altitude_string)
         dd_north = self.dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1], exif_data['GPSInfo'][2][2])
         dd_east = self.dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
 
