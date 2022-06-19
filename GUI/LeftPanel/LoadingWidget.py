@@ -46,7 +46,6 @@ class LoadingWidget(QWidget):
         self.validator.setBottom(10)
         self.imageCountLineEdit.setValidator(self.validator)
 
-        #self.countLabel.setAlignment(Qt.AlignHCenter)
         self.setup_actions()
 
     def update_validator(self):
@@ -76,7 +75,4 @@ class LoadingWidget(QWidget):
         self.scene_manager.image_count = count
         positions = self.scene_manager.calculate_all_positions(count)
         files = os.listdir(directory)
-        self.resources_manager.load_images_in_scene(count, directory, files, positions, DIContainer.texture_size)
-
-        # self.image_searcher.start_classification(True)
-        # self.scene_manager.group_clusters()
+        self.resources_manager.load_images_in_scene(count, directory, files, positions)

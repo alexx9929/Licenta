@@ -27,12 +27,10 @@ class ResourcesManager:
         self.directory = None
         self.files = None
         self.positions = None
-        self.texture_size = 255
         pass
 
     # region Default thread methods
     def create_threads(self):
-        print("MAIN THREAD: " + str(threading.get_ident()))
         for i in range(0, self.number_of_threads):
             self.thread_actions.append(None)
             self.threads.append(threading.Thread(target=lambda x=i: self.thread_loop(x)))
@@ -50,25 +48,23 @@ class ResourcesManager:
             if threading.current_thread() == self.threads[i]:
                 self.thread_actions[i] = None
                 print("Thread " + str(threading.get_ident()) + " finished loading")
-            # DIContainer.main_window.repaint()
 
     # endregion
 
     def thread_start_classification(self, thread_index):
         self.thread_actions[thread_index] = self.start_classification
 
-    # region Multithreaded top-level actions
+    # region Multithreading top-level actions
     def start_classification(self):
         DIContainer.image_searcher.start_classification(True)
         DIContainer.post_load_widget.enable_group_clusters_button(True)
         self.stop_thread()
 
-    def load_images_in_scene(self, count: int, directory: str, files: list, positions: list, texture_size: int):
+    def load_images_in_scene(self, count: int, directory: str, files: list, positions: list):
         """Will assign equal amounts of image data to load for every available thread and will start loading"""
         self.directory = directory
         self.files = files
         self.positions = positions
-        self.texture_size = texture_size
 
         t1 = time.perf_counter()
         images_per_thread = int(count / self.number_of_threads)
@@ -96,7 +92,8 @@ class ResourcesManager:
     # endregion
 
     # region Queue processing
-    def process_queue(self, condition, process_method):
+    @staticmethod
+    def process_queue(condition, process_method):
         """While condition is true, process_method will be called"""
         while condition():
             process_method()
@@ -106,9 +103,10 @@ class ResourcesManager:
         serialized_object = self.queue.get()
         obj = serialized_object.create_object()
         DIContainer.scene.objects.append(obj)
-        obj.material.texture_image.setSize(QSize(self.texture_size, self.texture_size))
+        obj.material.texture_image.setSize(QSize(DIContainer.texture_size, DIContainer.texture_size))
 
-    def objects_not_loaded(self, count):
+    @staticmethod
+    def objects_not_loaded(count):
         return len(DIContainer.scene.objects) != count
 
     # endregion
@@ -121,11 +119,11 @@ class ResourcesManager:
     def load_batch_of_images(self, start_index: int, end_index: int):
         """Function used by worker threads to read images and generate info"""
         for i in range(start_index, end_index + 1):
-            self.generate_object_info(self.directory, self.files[i], self.positions[i], self.texture_size)
+            self.generate_object_info(self.directory, self.files[i], self.positions[i])
 
         self.stop_thread()
 
-    def generate_object_info(self, directory: str, file: str, position: QVector3D, texture_size: int):
+    def generate_object_info(self, directory: str, file: str, position: QVector3D):
         """Calculates the necessary data to create an object and puts it in the queue
         so that the main thread can create it"""
         ratio = 1
@@ -143,11 +141,12 @@ class ResourcesManager:
         serialized_object.scale = QVector3D(ratio, 1, 1)
 
         # Creating image parameters
-        serialized_object.texture_size = self.texture_size
+        serialized_object.texture_size = DIContainer.texture_size
         self.calculate_image(full_path, serialized_object)
         self.queue.put(serialized_object)
 
-    def calculate_image(self, path, obj):
+    @staticmethod
+    def calculate_image(path, obj):
         """Reads an image and calculates the histogram in order to create the object"""
         # Loading image with cv2
         cv_img = cv2.imread(path)
@@ -157,7 +156,7 @@ class ResourcesManager:
 
         # Creating a QImage from the cv2 image
         image = QImage(cv_img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped().scaled(
-            QSize(self.texture_size, self.texture_size), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            QSize(DIContainer.texture_size, DIContainer.texture_size), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         # channels_means = cv2.mean(cv_img)[:3]
         obj.image = image
         obj.histogram = histogram

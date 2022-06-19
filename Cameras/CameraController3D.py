@@ -1,5 +1,5 @@
 from PySide6.Qt3DExtras import Qt3DExtras
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, QTimer
 import DIContainer
 from ResourcesManagement.SceneManager import SceneManager, Distribution
 from ObjectBuilding.GameObject import GameObject
@@ -38,9 +38,9 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
         self.rotation_steps = None
 
         # Parallel camera control
-        self.control_callback = None
-        self.control_thread = Thread(target=self.control_camera)
-        self.control_thread.start()
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.move_to_target)
+        self.step = 1  # Milliseconds
 
     def center_camera(self):
         if self.scene_manager.image_distribution == Distribution.planar:
@@ -66,14 +66,6 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
             z_pos = self.scene_manager.normal_deviation[2] * 2
             DIContainer.scene.cameraHolder.set_position(0, 0, z_pos)
 
-    def control_camera(self):
-        """This function runs in a separate thread and controls the camera if there is a method for it"""
-        while True:
-            if self.control_callback:
-                self.control_callback()
-            else:
-                time.sleep(0)
-
     def move_to_target(self):
         """This function moves and rotates the camera smoothly until it reaches its target
          while keeping the input inactive"""
@@ -86,13 +78,10 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
             self.camera_holder.camera.rotate(self.rotation_steps)
 
             self.released_control = False
-            DIContainer.main_window.repaint()
-
-            self.camera_holder.print_rotation()
         else:
             if not self.released_control:
                 DIContainer.input_handler.unblock_mouse_input()
-                self.control_callback = None
+                self.timer.stop()
                 self.initial_position = None
                 self.interpolation_factor = 0
                 DIContainer.main_window.clicked_object = None
@@ -116,7 +105,7 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
 
         # Starts movement
         DIContainer.input_handler.block_mouse_input()
-        self.control_callback = self.move_to_target
+        self.timer.start(self.step)
 
     def start_movement_to_object(self, obj: GameObject):
         self.target = obj
