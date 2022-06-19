@@ -62,8 +62,8 @@ class ImageDataWidget(QWidget):
         dd_north = self.dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1], exif_data['GPSInfo'][2][2])
         dd_east = self.dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
 
-        #url = "https://www.google.com/maps/place/" + self.format_gps_coordinates(str(exif_data['GPSInfo'][2]),
-                                                                                 #str(exif_data['GPSInfo'][4]))
+        # url = "https://www.google.com/maps/place/" + self.format_gps_coordinates(str(exif_data['GPSInfo'][2]),
+        # str(exif_data['GPSInfo'][4]))
         DIContainer.map_widget.new_map(dd_north, dd_east)
 
     def load_dateTime(self, exif_data):
@@ -77,7 +77,7 @@ class ImageDataWidget(QWidget):
         month_name = date_time_obj.strftime("%b")
 
         formatted_date = date_split[2] + " " + month_name + " " + date_split[0]
-        self.createdField.setText(formatted_date)
+        self.createdField.setText(formatted_date + "  " + str(time))
 
     def dms_to_dd(self, d, m, s):
         dd = d + float(m) / 60 + float(s) / 3600
