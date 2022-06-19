@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QFil
     QGridLayout
 import DIContainer, os
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QBrush, QPen, QPainter, QColor
 from Utilities import MiscFunctions
 from GUI.LeftPanel.MapWidget import MapWidget
 
@@ -15,7 +16,6 @@ class ImageDataWidget(QWidget):
         self.widgetLayout = QVBoxLayout()
         self.dataLayout = QGridLayout()
         self.mapWidget = MapWidget()
-
         self.filenameLabel = QLabel("Name: ")
         self.filenameField = QLabel()
         self.createdLabel = QLabel("Created on: ")
@@ -27,7 +27,6 @@ class ImageDataWidget(QWidget):
     def setup(self):
         self.widgetLayout.addWidget(self.dataLabel)
         self.widgetLayout.addLayout(self.dataLayout)
-        self.setLayout(self.widgetLayout)
 
         self.dataLabel.setAlignment(Qt.AlignHCenter)
 
@@ -35,10 +34,12 @@ class ImageDataWidget(QWidget):
         self.dataLayout.addWidget(self.filenameField, 0, 1)
         self.dataLayout.addWidget(self.mapWidget, 1, 0, 1, 2)
         self.dataLayout.addWidget(self.createdLabel, 2, 0)
-        self.dataLayout.addWidget(self.createdField, 2, 1)
+        #self.dataLayout.addWidget(self.createdField, 2, 1)
 
-        #self.mapWidget.setSizePolicy(Qt.PreferredSize)
-      #  self.mapWidget.setFixedHeight(1000)
+        self.setLayout(self.widgetLayout)
+        #self.dataLayout.setRowMinimumHeight(1, 600)
+        #self.dataLayout.setRowStretch(1, 5)
+        self.mapWidget.setMinimumHeight(400)
 
     def set_data(self, obj):
         texture_image = obj.get_texture_image()

@@ -17,7 +17,7 @@ class LeftPanel(QWidget):
         self.imageDataWidget = ImageDataWidget()
 
         # Layout setup
-        self.setFixedSize(400, self.height())
+        self.setFixedWidth(400)
 
         self.panelLayout = QGridLayout()
         self.panelLayout.setAlignment(Qt.AlignTop)
