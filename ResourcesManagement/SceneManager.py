@@ -115,9 +115,6 @@ class SceneManager:
         x_offset = 4
         y_offset = 4
 
-        # TODO: think of the clusters as cubes (they have same deviation on all axes which means equal sizes)
-        #  and group them as you were grouping the planes
-
         deviation_sum = 0
         for i in range(0, number_of_clusters):
             number_of_images_in_cluster = classes_counts[i]

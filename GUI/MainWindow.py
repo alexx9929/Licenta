@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         # Setup
         self.central_widget.setLayout(self.boxLayout)
         self.setCentralWidget(self.central_widget)
-        self.setGeometry(QRect(0, 0, 2533, 1336))
+        self.setGeometry(QRect(0, 0, 1266, 1336))
 
         # Multithreading
         self.clicked_object = None
