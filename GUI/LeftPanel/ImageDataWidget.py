@@ -59,9 +59,12 @@ class ImageDataWidget(QWidget):
         self.filenameField.setText(texture_image.filename)
 
     def load_coordinates(self, exif_data):
-        url = "https://www.google.com/maps/place/" + self.format_gps_coordinates(str(exif_data['GPSInfo'][2]),
-                                                                                 str(exif_data['GPSInfo'][4]))
-        DIContainer.map_widget.load_page(url)
+        dd_north = self.dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1], exif_data['GPSInfo'][2][2])
+        dd_east = self.dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
+
+        #url = "https://www.google.com/maps/place/" + self.format_gps_coordinates(str(exif_data['GPSInfo'][2]),
+                                                                                 #str(exif_data['GPSInfo'][4]))
+        DIContainer.map_widget.new_map(dd_north, dd_east)
 
     def load_dateTime(self, exif_data):
         string = exif_data["DateTime"]
@@ -75,6 +78,10 @@ class ImageDataWidget(QWidget):
 
         formatted_date = date_split[2] + " " + month_name + " " + date_split[0]
         self.createdField.setText(formatted_date)
+
+    def dms_to_dd(self, d, m, s):
+        dd = d + float(m) / 60 + float(s) / 3600
+        return dd
 
     def format_gps_coordinates(self, north: str, east: str):
         split = north[1:-1].split(",")
