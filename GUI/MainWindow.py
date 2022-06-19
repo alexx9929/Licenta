@@ -1,10 +1,8 @@
 import DIContainer
 from PySide6.QtWidgets import *
 from PySide6.QtCore import QRect, Qt
-import PySide6
 from threading import Thread
 import time
-from GUI.ImageDataWidget import ImageDataWidget
 from GUI.LeftPanel.LeftPanel import LeftPanel
 
 

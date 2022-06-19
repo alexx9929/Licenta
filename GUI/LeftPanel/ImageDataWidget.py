@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QFil
 import DIContainer, os
 from PySide6.QtCore import Qt
 from Utilities import MiscFunctions
+from GUI.LeftPanel.MapWidget import MapWidget
 
 
 class ImageDataWidget(QWidget):
@@ -13,6 +14,7 @@ class ImageDataWidget(QWidget):
         self.dataLabel = QLabel("Image data")
         self.widgetLayout = QVBoxLayout()
         self.dataLayout = QGridLayout()
+        #self.mapWidget = MapWidget()
 
         self.filenameLabel = QLabel("Name: ")
         self.filenameField = QLabel()
@@ -29,6 +31,7 @@ class ImageDataWidget(QWidget):
 
         self.dataLayout.addWidget(self.filenameLabel, 0, 0)
         self.dataLayout.addWidget(self.filenameField, 0, 1)
+        #self.dataLayout.addWidget(self.mapWidget, 1, 0, 1, 2)
 
     def set_data(self, obj):
         texture_image = obj.get_texture_image()

@@ -32,6 +32,7 @@ class ResourcesManager:
 
     # region Default thread methods
     def create_threads(self):
+        print("MAIN THREAD: " + str(threading.get_ident()))
         for i in range(0, self.number_of_threads):
             self.thread_actions.append(None)
             self.threads.append(threading.Thread(target=lambda x=i: self.thread_loop(x)))
@@ -49,7 +50,7 @@ class ResourcesManager:
             if threading.current_thread() == self.threads[i]:
                 self.thread_actions[i] = None
                 print("Thread " + str(threading.get_ident()) + " finished loading")
-                DIContainer.main_window.repaint()
+            # DIContainer.main_window.repaint()
 
     # endregion
 
