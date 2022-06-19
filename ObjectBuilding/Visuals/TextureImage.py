@@ -22,4 +22,4 @@ class TextureImage(Qt3DRender.QPaintedTextureImage):
         self.image = None  # Once we paint the image we don't need it anymore
 
     def get_full_path(self):
-        return os.path.join(DIContainer.main_window.working_directory, self.filename)
+        return os.path.join(DIContainer.working_directory, self.filename)
