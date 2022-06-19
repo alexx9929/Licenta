@@ -9,6 +9,7 @@ from GUI.LeftPanel.MapWidget import MapWidget
 from PIL import Image
 import PIL.ExifTags
 import datetime
+import pprint
 
 
 class ImageDataWidget(QWidget):
@@ -59,11 +60,18 @@ class ImageDataWidget(QWidget):
             }
             self.load_coordinates(exif_data)
             self.load_dateTime(exif_data)
+        else:
+            self.load_coordinates()
+            self.load_dateTime()
 
         self.filenameField.setText(texture_image.filename)
 
-    def load_coordinates(self, exif_data):
-        print(exif_data['GPSInfo'])
+    def load_coordinates(self, exif_data=None):
+        if exif_data is None:
+            DIContainer.map_widget.reset_map()
+            self.altitudeField.setText("")
+            return
+
         above_sea_level = int.from_bytes(exif_data['GPSInfo'][5], 'big') == 1
         alt = exif_data['GPSInfo'][6]
 
@@ -78,7 +86,11 @@ class ImageDataWidget(QWidget):
         # str(exif_data['GPSInfo'][4]))
         DIContainer.map_widget.new_map(dd_north, dd_east)
 
-    def load_dateTime(self, exif_data):
+    def load_dateTime(self, exif_data=None):
+        if exif_data is None:
+            self.createdField.setText("")
+            return
+
         string = exif_data["DateTime"]
         split = string.split(" ")
         date = split[0]

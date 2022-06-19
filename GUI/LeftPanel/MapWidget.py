@@ -11,7 +11,7 @@ class MapWidget(QWebEngineView):
     def __init__(self):
         super().__init__()
         DIContainer.map_widget = self
-        self.new_map(0, 0, 1, False)
+        self.reset_map()
         pass
 
     def load_page(self, url):
@@ -24,3 +24,6 @@ class MapWidget(QWebEngineView):
             tooltip = "N: " + str(north)[:7] + " E: " + str(east)[:7]
             folium.Marker([north, east], tooltip=tooltip).add_to(folium_map)
         self.setHtml(folium_map.get_root().render())
+
+    def reset_map(self):
+        self.new_map(0, 0, 1, False)
