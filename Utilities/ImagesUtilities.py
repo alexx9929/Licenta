@@ -99,19 +99,21 @@ def get_info_from_object(obj):
         }
 
         if exif_data.keys().__contains__('GPSInfo'):
-            dd_north = dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1],
-                                 exif_data['GPSInfo'][2][2])
-            dd_east = dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
-            info['N'] = dd_north
-            info['E'] = dd_east
+            if exif_data['GPSInfo'].__contains__(2) and exif_data['GPSInfo'].__contains__(4):
+                dd_north = dms_to_dd(exif_data['GPSInfo'][2][0], exif_data['GPSInfo'][2][1],
+                                     exif_data['GPSInfo'][2][2])
+                dd_east = dms_to_dd(exif_data['GPSInfo'][4][0], exif_data['GPSInfo'][4][1], exif_data['GPSInfo'][4][2])
+                info['N'] = dd_north
+                info['E'] = dd_east
 
-            above_sea_level = int.from_bytes(exif_data['GPSInfo'][5], 'big') == 1
-            alt = exif_data['GPSInfo'][6]
+            if exif_data['GPSInfo'].__contains__(5) and exif_data['GPSInfo'].__contains__(6):
+                above_sea_level = int.from_bytes(exif_data['GPSInfo'][5], 'big') == 1
+                alt = exif_data['GPSInfo'][6]
 
-            altitude_string = str(alt) + "m " + "below sea level" if above_sea_level else str(
-                alt) + "m " + "above sea level"
+                altitude_string = str(alt) + "m " + "below sea level" if above_sea_level else str(
+                    alt) + "m " + "above sea level"
 
-            info['Altitude'] = altitude_string
+                info['Altitude'] = altitude_string
 
         if exif_data.keys().__contains__("DateTime"):
             string = exif_data["DateTime"]

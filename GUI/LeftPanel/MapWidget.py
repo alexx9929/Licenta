@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QSizePolicy
 import DIContainer
 import folium
 import numpy as np
+import alphashape
 
 
 class MapWidget(QWebEngineView):
@@ -55,3 +56,4 @@ class MapWidget(QWebEngineView):
         if count > 0:
             self.center[0] = average_n / count
             self.center[1] = average_e / count
+        pass
