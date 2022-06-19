@@ -3,7 +3,7 @@ import time
 
 from PySide6.QtGui import *
 from Utilities import MiscFunctions
-from PySide6.QtCore import QRect, QSize, Qt
+from PySide6.QtCore import QRect, QSize, Qt, QObject, Signal, QTimer
 from memory_profiler import profile
 import numpy as np
 import imagesize
@@ -15,12 +15,14 @@ import cv2
 from Utilities import ImagesUtilities
 
 
-class ResourcesManager:
+class ResourcesManager(QObject):
 
     def __init__(self):
+        super().__init__()
         self.number_of_threads = 10
         self.threads = []
         self.thread_actions = []
+
         self.create_threads()
         self.queue = queue.Queue()
 
@@ -28,6 +30,9 @@ class ResourcesManager:
         self.files = None
         self.positions = None
         pass
+
+    def on_object_serialized(self, obj):
+        self.deserialize_object(obj)
 
     # region Default thread methods
     def create_threads(self):
@@ -60,13 +65,11 @@ class ResourcesManager:
         DIContainer.post_load_widget.enable_group_clusters_button(True)
         self.stop_thread()
 
-    def load_images_in_scene(self, count: int, directory: str, files: list, positions: list):
+    def load_images_in_scene(self, count: int, files: list, positions: list):
         """Will assign equal amounts of image data to load for every available thread and will start loading"""
-        self.directory = directory
         self.files = files
         self.positions = positions
 
-        t1 = time.perf_counter()
         images_per_thread = int(count / self.number_of_threads)
 
         # Dividing the data and assigning it to every available thread and starting the loop
@@ -81,9 +84,6 @@ class ResourcesManager:
 
         # Creating objects from the loaded data
         self.process_queue(lambda x=count: self.objects_not_loaded(x), self.deserialize_queue_item)
-
-        t2 = time.perf_counter()
-        print("Loading time: " + str(t2 - t1) + " using " + str(self.number_of_threads) + " threads")
 
         DIContainer.post_load_widget.enable_group_clusters_button(False)
         DIContainer.post_load_widget.enable_search_button(False)
@@ -105,6 +105,11 @@ class ResourcesManager:
         DIContainer.scene.objects.append(obj)
         obj.material.texture_image.setSize(QSize(DIContainer.texture_size, DIContainer.texture_size))
 
+    def deserialize_object(self, serialized_object):
+        obj = serialized_object.create_object()
+        DIContainer.scene.objects.append(obj)
+        obj.material.texture_image.setSize(QSize(DIContainer.texture_size, DIContainer.texture_size))
+
     @staticmethod
     def objects_not_loaded(count):
         return len(DIContainer.scene.objects) != count
@@ -119,15 +124,14 @@ class ResourcesManager:
     def load_batch_of_images(self, start_index: int, end_index: int):
         """Function used by worker threads to read images and generate info"""
         for i in range(start_index, end_index + 1):
-            self.generate_object_info(self.directory, self.files[i], self.positions[i])
-
+            self.generate_object_info(self.files[i], self.positions[i])
         self.stop_thread()
 
-    def generate_object_info(self, directory: str, file: str, position: QVector3D):
+    def generate_object_info(self, file: str, position: QVector3D):
         """Calculates the necessary data to create an object and puts it in the queue
         so that the main thread can create it"""
         ratio = 1
-        full_path = os.path.join(directory, file)
+        full_path = os.path.join(DIContainer.working_directory, file)
 
         if DIContainer.scene_manager.keep_aspect_ratios:
             width, height = imagesize.get(full_path)
@@ -143,6 +147,8 @@ class ResourcesManager:
         # Creating image parameters
         serialized_object.texture_size = DIContainer.texture_size
         self.calculate_image(full_path, serialized_object)
+       # self.object_serialized.emit(serialized_object)
+
         self.queue.put(serialized_object)
 
     @staticmethod

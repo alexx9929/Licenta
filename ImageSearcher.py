@@ -20,7 +20,7 @@ class ImageSearcher:
     def start_classification(self, use_histograms):
         """Applies a K-means algorithm to classify the data using histograms or the color channels of the images"""
         t1 = perf_counter()
-        self.predicted_values = self.get_predicted_values(use_histograms)
+        self.predicted_values = self.get_predicted_values()
         t2 = perf_counter()
         print("Machine learning time: " + str(t2 - t1)[:4])
         pass
@@ -123,7 +123,7 @@ class ImageSearcher:
             # plt.show()
             return kneedle.knee
 
-    def get_predicted_values(self, use_histograms):
+    def get_predicted_values(self):
         # Machine learning
         data = ImagesUtilities.get_histograms()
        # self.k = int(len(data) / 10)

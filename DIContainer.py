@@ -13,6 +13,6 @@ post_load_widget = None
 image_data_widget = None
 
 # defaultImageDirectory = 'C:\\Users\\serba\\Desktop\\train2017'
-working_directory = 'C:\\Users\\serba\\Desktop\\Thermal'
+working_directory = 'C:\\Users\\serba\\Desktop\\originals'
 texture_size = 255
 max_dataset_length = 0

@@ -14,10 +14,12 @@ class ImageDataWidget(QWidget):
         self.dataLabel = QLabel("Image data")
         self.widgetLayout = QVBoxLayout()
         self.dataLayout = QGridLayout()
-        # self.mapWidget = MapWidget()
+        self.mapWidget = MapWidget()
 
         self.filenameLabel = QLabel("Name: ")
         self.filenameField = QLabel()
+        self.createdLabel = QLabel("Created on: ")
+        self.createdField = QLabel()
 
         self.setup()
         pass
@@ -31,7 +33,9 @@ class ImageDataWidget(QWidget):
 
         self.dataLayout.addWidget(self.filenameLabel, 0, 0)
         self.dataLayout.addWidget(self.filenameField, 0, 1)
-        # self.dataLayout.addWidget(self.mapWidget, 1, 0, 1, 2)
+        self.dataLayout.addWidget(self.mapWidget, 1, 0, 1, 2)
+        self.dataLayout.addWidget(self.createdLabel, 2, 0)
+        self.dataLayout.addWidget(self.createdField, 2, 1)
 
     def set_data(self, obj):
         texture_image = obj.get_texture_image()

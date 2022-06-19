@@ -20,13 +20,20 @@ class LoadingWidget(QWidget):
         self.loadImagesButton = QPushButton("Load images")
         self.errorLabel = QLabel("Invalid image count")
 
-        self.errorPallete = QPalette()
+        self.testButton = QPushButton("TEST")
+        self.testButton.clicked.connect(lambda x: self.test_function())
+        self.errorPalette = QPalette()
 
         self.widgetLayout = QVBoxLayout()
         self.countLayout = QHBoxLayout()
         self.validator = QIntValidator(10, DIContainer.max_dataset_length)
 
         self.setup()
+
+    def test_function(self):
+        # directory = DIContainer.working_directory
+        DIContainer.scene.clear_scene()
+        pass
 
     def setup(self):
         self.widgetLayout.addWidget(self.countLabel)
@@ -37,15 +44,16 @@ class LoadingWidget(QWidget):
         self.widgetLayout.addWidget(self.loadImagesButton)
         self.widgetLayout.addWidget(self.errorLabel)
 
-        self.errorPallete.setColor(QPalette.WindowText, Qt.red)
+        self.errorPalette.setColor(QPalette.WindowText, Qt.red)
 
-        self.errorLabel.setPalette(self.errorPallete)
+        self.errorLabel.setPalette(self.errorPalette)
         self.errorLabel.hide()
         self.setLayout(self.widgetLayout)
 
         self.validator.setBottom(10)
         self.imageCountLineEdit.setValidator(self.validator)
 
+        self.widgetLayout.addWidget(self.testButton)
         self.setup_actions()
 
     def update_validator(self):
@@ -68,11 +76,9 @@ class LoadingWidget(QWidget):
         else:
             self.errorLabel.hide()
 
-        directory = DIContainer.working_directory
         DIContainer.scene.clear_scene()
-        DIContainer.default_mesh = MeshBuilder.create_plane_mesh()
 
         self.scene_manager.image_count = count
         positions = self.scene_manager.calculate_all_positions(count)
-        files = os.listdir(directory)
-        self.resources_manager.load_images_in_scene(count, directory, files, positions)
+        files = os.listdir(DIContainer.working_directory)
+        self.resources_manager.load_images_in_scene(count, files, positions)

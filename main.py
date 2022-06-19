@@ -8,6 +8,7 @@ from Scene import Scene
 from GUI.MainWindow import MainWindow
 from ResourcesManagement import SceneManager, ResourcesManager
 from ImageSearcher import ImageSearcher
+from ObjectBuilding.Visuals import MeshBuilder
 
 app = DIContainer.app = QApplication(sys.argv)
 DIContainer.input_handler = GUI.InputHandler.InputHandler()
@@ -21,6 +22,7 @@ DIContainer.image_searcher = ImageSearcher()
 window = DIContainer.main_window = MainWindow()
 
 scene = DIContainer.scene = Scene()
+Scene.recreate_mesh()
 scene.initialize()
 
 view.setRootEntity(scene)
