@@ -31,7 +31,6 @@ class LoadingWidget(QWidget):
         self.setup()
 
     def test_function(self):
-        # directory = DIContainer.working_directory
         DIContainer.scene.clear_scene()
         pass
 

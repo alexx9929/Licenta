@@ -37,6 +37,9 @@ class ImageDataWidget(QWidget):
         self.dataLayout.addWidget(self.createdLabel, 2, 0)
         self.dataLayout.addWidget(self.createdField, 2, 1)
 
+        #self.mapWidget.setSizePolicy(Qt.PreferredSize)
+      #  self.mapWidget.setFixedHeight(1000)
+
     def set_data(self, obj):
         texture_image = obj.get_texture_image()
         self.filenameField.setText(texture_image.filename)
