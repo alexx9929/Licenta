@@ -84,11 +84,18 @@ class ResourcesManager(QObject):
 
         # Creating objects from the loaded data
         self.process_queue(lambda x=count: self.objects_not_loaded(x), self.deserialize_queue_item)
-
+        self.add_map_info()
         DIContainer.post_load_widget.enable_group_clusters_button(False)
         DIContainer.post_load_widget.enable_search_button(False)
         DIContainer.post_load_widget.enable_classification_button(True)
 
+    def add_map_info(self):
+        objs = DIContainer.scene.objects
+        infos = ImagesUtilities.get_dataset_infos(objs)
+        coords = ImagesUtilities.get_coords(infos)
+        DIContainer.map_widget.set_polygon(coords)
+        DIContainer.map_widget.reset_map()
+        pass
     # endregion
 
     # region Queue processing
@@ -147,9 +154,9 @@ class ResourcesManager(QObject):
         # Creating image parameters
         serialized_object.texture_size = DIContainer.texture_size
         self.calculate_image(full_path, serialized_object)
-       # self.object_serialized.emit(serialized_object)
-
         self.queue.put(serialized_object)
+
+
 
     @staticmethod
     def calculate_image(path, obj):

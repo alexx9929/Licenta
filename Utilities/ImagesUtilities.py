@@ -130,6 +130,32 @@ def get_info_from_object(obj):
     return info
 
 
+def get_dataset_infos(objs):
+    infos = []
+
+    for i in objs:
+        infos.append(get_info_from_object(i))
+
+    return infos
+
+
+def get_coords_from_info(info: dict):
+    if info.keys().__contains__('N') and info.keys().__contains__('E'):
+        return (info['N'], info['E'])
+    else:
+        return None
+
+
+def get_coords(infos: dict):
+    all_coords = []
+    for i in infos:
+        coords = get_coords_from_info(i)
+        if coords is not None:
+            all_coords.append(coords)
+
+    return all_coords
+
+
 def dms_to_dd(d, m, s):
     dd = d + float(m) / 60 + float(s) / 3600
     return dd
