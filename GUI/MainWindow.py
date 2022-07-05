@@ -37,6 +37,10 @@ class MainWindow(QMainWindow):
         self.boxLayout.addWidget(self.leftPanel)
         self.boxLayout.addWidget(self.container)
         self.boxLayout.setAlignment(self.leftPanel, Qt.AlignTop)
+        self.showMaximized()
+
+    def resizeEvent(self, event):
+        print(self.size())
 
     # TODO: move to check to app's event filter to remove the need for a new thread
     def click_check(self):
