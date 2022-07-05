@@ -93,6 +93,8 @@ class ResourcesManager(QObject):
         delta = t2 - t1
         print("Loaded after " + str(delta) + " seconds with " + str(self.number_of_threads))
 
+        DIContainer.scene_manager.clusters_center = QVector3D(0, 0, 40)
+        DIContainer.camera_controller.start_movement_to_target(QVector3D(0, 0, 40))
         DIContainer.post_load_widget.enable_group_clusters_button(False)
         DIContainer.post_load_widget.enable_search_button(False)
         DIContainer.post_load_widget.enable_classification_button(True)

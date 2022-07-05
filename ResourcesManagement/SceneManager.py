@@ -31,7 +31,7 @@ class SceneManager:
 
         self.clusters_distributions = []
 
-        self.clusters_center = [0,0,0]
+        self.clusters_center = [0, 0, 0]
         pass
 
     def set_image_count(self, count):
@@ -104,9 +104,9 @@ class SceneManager:
 
     def group_clusters(self):
         """Repositions all images to highlight the clusters"""
-        min_array = [999,999,999]
-        max_array = [0,0,0]
-        self.clusters_center = [0,0,0]
+        min_array = [999, 999, 999]
+        max_array = [0, 0, 0]
+        self.clusters_center = [0, 0, 0]
         self.clusters_distributions = []
         number_of_clusters = DIContainer.image_searcher.k
         classes_counts = MiscFunctions.get_classes_counts()
