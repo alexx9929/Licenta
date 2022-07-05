@@ -15,3 +15,4 @@ class TextureMaterial(Qt3DExtras.QTextureMaterial):
         self._texture.addTextureImage(self.texture_image)
         self.setTexture(self._texture)
         pass
+

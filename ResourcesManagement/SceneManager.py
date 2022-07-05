@@ -30,6 +30,8 @@ class SceneManager:
         self.keep_aspect_ratios = True
 
         self.clusters_distributions = []
+
+        self.clusters_center = [0,0,0]
         pass
 
     def set_image_count(self, count):
@@ -102,6 +104,9 @@ class SceneManager:
 
     def group_clusters(self):
         """Repositions all images to highlight the clusters"""
+        min_array = [999,999,999]
+        max_array = [0,0,0]
+        self.clusters_center = [0,0,0]
         self.clusters_distributions = []
         number_of_clusters = DIContainer.image_searcher.k
         classes_counts = MiscFunctions.get_classes_counts()
@@ -158,6 +163,25 @@ class SceneManager:
             objects[i].transform.setTranslation(positions_matrix[image_class][position_index])
             positions_counter_matrix[image_class] += 1
 
+        for i in range(0, len(positions_matrix)):
+            for j in range(0, len(positions_matrix[i])):
+                if positions_matrix[i][j].x() > max_array[0]:
+                    max_array[0] = positions_matrix[i][j].x()
+                if positions_matrix[i][j].x() < min_array[0]:
+                    min_array[0] = positions_matrix[i][j].x()
+
+                if positions_matrix[i][j].y() > max_array[1]:
+                    max_array[1] = positions_matrix[i][j].y()
+                if positions_matrix[i][j].y() < min_array[1]:
+                    min_array[1] = positions_matrix[i][j].y()
+
+                if positions_matrix[i][j].z() > max_array[2]:
+                    max_array[2] = positions_matrix[i][j].z()
+                if positions_matrix[i][j].z() < min_array[2]:
+                    min_array[2] = positions_matrix[i][j].z()
+
+        self.clusters_center = QVector3D((min_array[0] + max_array[0]) / 2, (min_array[1] + max_array[1]) / 2, 40)
+        DIContainer.camera_controller.center_camera()
         pass
 
     def group_cluster(self, objects, predicted_values, cluster_index, positions):

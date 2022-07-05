@@ -1,27 +1,24 @@
-import os, sys
+import os
 import time
-
 from PySide6.QtGui import *
-from Utilities import MiscFunctions
-from PySide6.QtCore import QRect, QSize, Qt, QObject, Signal, QTimer
-from memory_profiler import profile
-import numpy as np
+from PySide6.QtCore import QSize, Qt, QObject
 import imagesize
-from ObjectBuilding.ObjectBuilder import ObjectBuilder
 import DIContainer
 import threading, queue
 from ObjectBuilding.SerializedGameObject import SerializedGameObject
 import cv2
 from Utilities import ImagesUtilities
+from time import perf_counter
 
 
 class ResourcesManager(QObject):
 
     def __init__(self):
         super().__init__()
-        self.number_of_threads = 10
+        self.number_of_threads = 6
         self.threads = []
         self.thread_actions = []
+        self.stop_flags = []
 
         self.create_threads()
         self.queue = queue.Queue()
@@ -36,7 +33,12 @@ class ResourcesManager(QObject):
 
     # region Default thread methods
     def create_threads(self):
+        self.threads = []
+        self.thread_actions = []
+        self.stop_flags = []
+
         for i in range(0, self.number_of_threads):
+            self.stop_flags.append(False)
             self.thread_actions.append(None)
             self.threads.append(threading.Thread(target=lambda x=i: self.thread_loop(x)))
             self.threads[i].start()
@@ -72,6 +74,8 @@ class ResourcesManager(QObject):
 
         images_per_thread = int(count / self.number_of_threads)
 
+        t1 = perf_counter()
+
         # Dividing the data and assigning it to every available thread and starting the loop
         for i in range(0, self.number_of_threads):
             start = i * images_per_thread
@@ -85,6 +89,10 @@ class ResourcesManager(QObject):
         # Creating objects from the loaded data
         self.process_queue(lambda x=count: self.objects_not_loaded(x), self.deserialize_queue_item)
         self.add_map_info()
+        t2 = perf_counter()
+        delta = t2 - t1
+        print("Loaded after " + str(delta) + " seconds with " + str(self.number_of_threads))
+
         DIContainer.post_load_widget.enable_group_clusters_button(False)
         DIContainer.post_load_widget.enable_search_button(False)
         DIContainer.post_load_widget.enable_classification_button(True)

@@ -1,15 +1,7 @@
-import PIL.Image
-from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QFileDialog, QLabel, QCheckBox, QHBoxLayout, \
-    QGridLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel,QGridLayout
 import DIContainer, os
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QBrush, QPen, QPainter, QColor
-from Utilities import MiscFunctions
 from GUI.LeftPanel.MapWidget import MapWidget
-from PIL import Image
-import PIL.ExifTags
-import datetime
-import pprint
 from Utilities import ImagesUtilities
 
 

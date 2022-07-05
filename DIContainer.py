@@ -10,6 +10,7 @@ app = None
 input_handler = None
 resources_manager = None
 post_load_widget = None
+loading_widget = None
 image_data_widget = None
 map_widget = None
 

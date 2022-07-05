@@ -63,8 +63,9 @@ class CameraController3D(Qt3DExtras.QFirstPersonCameraController):
             self.camera_holder.set_position(x_pos, y_pos, 10)
 
         if self.scene_manager.image_distribution == Distribution.normal:
-            z_pos = self.scene_manager.normal_deviation[2] * 2
-            DIContainer.scene.cameraHolder.set_position(0, 0, z_pos)
+            #z_pos = self.scene_manager.normal_deviation[2] * 2
+            #DIContainer.scene.cameraHolder.set_position(0, 0, z_pos)
+            self.start_movement_to_target(DIContainer.scene_manager.clusters_center)
 
     def move_to_target(self):
         """This function moves and rotates the camera smoothly until it reaches its target

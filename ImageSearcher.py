@@ -1,6 +1,7 @@
+import sklearn.metrics
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, confusion_matrix, plot_confusion_matrix,ConfusionMatrixDisplay
 from Utilities import MiscFunctions, DataVisualization, ImagesUtilities
 import DIContainer, cv2, math
 from matplotlib import pyplot as plt
@@ -8,6 +9,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from kneed import KneeLocator
 from time import perf_counter
+from pretty_confusion_matrix import pp_matrix_from_data
 
 
 class ImageSearcher:
@@ -15,6 +17,7 @@ class ImageSearcher:
     def __init__(self):
         self.k = 0
         self.predicted_values = None
+        self.labels = None
         pass
 
     def start_classification(self, use_histograms):
@@ -23,6 +26,10 @@ class ImageSearcher:
         self.predicted_values = self.get_predicted_values()
         t2 = perf_counter()
         print("Machine learning time: " + str(t2 - t1)[:4])
+
+        #count = len(DIContainer.scene.objects)
+       # self.confusion_matrix()
+        #DIContainer.image_searcher.test_n_image_search(count, self.predicted_values)
         pass
 
     def search_image(self, path):
@@ -42,11 +49,24 @@ class ImageSearcher:
         return image_class
         # correlations = self.get_histogram_correlations(cv_img)
 
+    def confusion_matrix(self):
+        test_values = self.predicted_values
+        predicted_values = []
+        count = len(DIContainer.scene.objects)
+
+        for i in range(0, count):
+            print("Searching " + str(i))
+            img = cv2.imread(DIContainer.scene.objects[i].get_texture_image().get_full_path())
+            predicted_values.append(self.get_image_class(img))
+
+        pp_matrix_from_data(test_values, predicted_values)
+
     def test_n_image_search(self, n, predicted_values):
         passed_tests = 0
         failed_tests = 0
 
         for i in range(0, n):
+            print("Testing " + str(i))
             value = self.test_image_search(predicted_values)
             if value:
                 passed_tests += 1
@@ -57,15 +77,20 @@ class ImageSearcher:
         print("Failed tests: " + str(failed_tests))
 
     def test_image_search(self, predicted_values):
+        # A random index from the available ones
         image_index = np.random.randint(len(predicted_values) - 1)
-        obj = MiscFunctions.get_all_texture_images()[image_index]
-        path = obj.get_full_path()
-        image_class = predicted_values[image_index]
-        image = cv2.imread(path)
 
-        # print("Image index: " + str(image_index))
-        # print("Searching " + path)
-        # print("Image class: " + str(image_class))
+        # The object that contains the image
+        obj = MiscFunctions.get_all_texture_images()[image_index]
+
+        # Path of the image
+        path = obj.get_full_path()
+
+        # The cluster to which the image belongs, taken from the predicted values
+        image_class = predicted_values[image_index]
+
+        # KNN predicts to which cluster the image belongs
+        image = cv2.imread(path)
         predicted_class = self.get_image_class(image)
         return predicted_class == image_class
 
@@ -84,7 +109,7 @@ class ImageSearcher:
 
     def get_optimal_k(self, data, using_elbow, using_distorions=False):
         """Uses elbow method or silhouette method with either distortion scores or inertia scores"""
-        max_k = 20 if len(data) >= 20 else len(data)
+        max_k = 30 if len(data) >= 30 else len(data)
         data = np.array(data)
         k_values = []
         scores = []
@@ -105,6 +130,7 @@ class ImageSearcher:
             return optimal_k
         else:
             for k in range(2, max_k + 1):
+                print("K: " + str(k))
                 k_values.append(k)
                 kmeans = KMeans(n_clusters=k)
                 kmeans.fit(data)
@@ -126,13 +152,14 @@ class ImageSearcher:
     def get_predicted_values(self):
         # Machine learning
         data = ImagesUtilities.get_histograms()
-       # self.k = int(len(data) / 10)
+        #self.k = int(len(data) / 10)
         self.k = self.get_optimal_k(data, True, False)
 
         print("Optimal K: " + str(self.k))
         k_means = KMeans(n_clusters=self.k)
         model = k_means.fit(data)
         predicted_values = k_means.predict(data)
+        self.labels = k_means.labels_
 
         return predicted_values
 

@@ -10,6 +10,7 @@ class LoadingWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+        DIContainer.loading_widget = self
         self.scene_manager = DIContainer.scene_manager
         self.resources_manager = DIContainer.resources_manager
 
@@ -52,7 +53,7 @@ class LoadingWidget(QWidget):
         self.validator.setBottom(10)
         self.imageCountLineEdit.setValidator(self.validator)
 
-        self.widgetLayout.addWidget(self.testButton)
+        #self.widgetLayout.addWidget(self.testButton)
         self.setup_actions()
 
     def update_validator(self):
